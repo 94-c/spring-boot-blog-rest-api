@@ -13,4 +13,5 @@ public class UpdatePostRequestDto {
     private String content;
     private LocalDateTime updatedAt;
 
+    private Long categoryId;
 }

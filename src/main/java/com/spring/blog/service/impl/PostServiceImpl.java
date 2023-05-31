@@ -1,5 +1,6 @@
 package com.spring.blog.service.impl;
 
+import com.spring.blog.entity.Category;
 import com.spring.blog.entity.Post;
 import com.spring.blog.entity.Role;
 import com.spring.blog.entity.User;
@@ -13,6 +14,7 @@ import com.spring.blog.payload.PageResponse;
 import com.spring.blog.payload.request.CreatePostRequestDto;
 import com.spring.blog.payload.request.UpdatePostRequestDto;
 import com.spring.blog.payload.response.PostResponse;
+import com.spring.blog.repository.CategoryRepository;
 import com.spring.blog.repository.PostRepository;
 import com.spring.blog.repository.UserRepository;
 import com.spring.blog.security.UserPrincipal;
@@ -39,6 +41,8 @@ import static com.spring.blog.utils.AppConstants.*;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+    private final CategoryRepository categoryRepository;
+
 
     @Override
     @Transactional(readOnly = true)
@@ -69,6 +73,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post createPost(CreatePostRequestDto dto, UserPrincipal currentUser) {
 
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException(CATEGORY, ID, dto.getCategoryId()));
+
         Post post = Post.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
@@ -76,6 +83,7 @@ public class PostServiceImpl implements PostService {
                         .createdAt(LocalDateTime.now())
                         .build())
                 .userId(currentUser.getId())
+                .category(category)
                 .build();
 
         Post createPost = postRepository.save(post);
@@ -90,12 +98,17 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post updatePost(Long postId, UpdatePostRequestDto dto, UserPrincipal currentUser) {
-        Post findByPost = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException(POST, ID, postId));
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException(CATEGORY, ID, dto.getCategoryId()));
+
+        Post findByPost = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException(POST, ID, postId));
 
         if (findByPost.getUserId().equals(currentUser.getId())
                 || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
             findByPost.setTitle(dto.getTitle());
             findByPost.setContent(dto.getContent());
+            findByPost.setCategory(category);
             return postRepository.save(findByPost);
         }
 
