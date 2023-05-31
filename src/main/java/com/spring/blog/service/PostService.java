@@ -1,6 +1,7 @@
 package com.spring.blog.service;
 
 import com.spring.blog.entity.Post;
+import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.request.CreatePostRequestDto;
 import com.spring.blog.payload.request.UpdatePostRequestDto;
 import com.spring.blog.security.UserPrincipal;
@@ -12,4 +13,5 @@ public interface PostService {
 
     Post updatePost(Long postId, UpdatePostRequestDto dto, UserPrincipal currentUser);
 
+    ApiResponse deletePost(Long id, UserPrincipal currentUser);
 }

@@ -1,4 +1,4 @@
-package com.spring.blog.payload.dto;
+package com.spring.blog.payload.response;
 
 import com.spring.blog.entity.Post;
 import lombok.Builder;

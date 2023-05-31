@@ -1,8 +1,9 @@
 package com.spring.blog.controller;
 
 import com.spring.blog.entity.Post;
+import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.SuccessResponse;
-import com.spring.blog.payload.dto.PostResponse;
+import com.spring.blog.payload.response.PostResponse;
 import com.spring.blog.payload.request.CreatePostRequestDto;
 import com.spring.blog.payload.request.UpdatePostRequestDto;
 import com.spring.blog.security.CurrentUser;
@@ -10,6 +11,7 @@ import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,7 +55,13 @@ public class PostController {
         return SuccessResponse.success(PostResponse.updatePostResponse(updatePost));
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse> deletePost(@PathVariable(name = "id") Long id, @CurrentUser UserPrincipal currentUser) {
+        ApiResponse apiResponse = postService.deletePost(id, currentUser);
 
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 
 
 }

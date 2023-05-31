@@ -62,7 +62,23 @@ public class PostServiceImpl implements PostService {
             return postRepository.save(findByPost);
         }
 
-        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "You don't have permission to edit this post");
+        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "권한이 없습니다.");
+
+        throw new UnauthorizedException(apiResponse);
+    }
+
+    @Override
+    public ApiResponse deletePost(Long postId, UserPrincipal currentUser) {
+        Post findByPost = postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException(POST, ID, postId));
+
+        if (findByPost.getUserId().equals(currentUser.getId())
+                || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
+            postRepository.deleteById(postId);
+
+            return new ApiResponse(Boolean.TRUE, "게시물이 삭제 되었습니다.");
+        }
+
+        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "권한이 없습니다.");
 
         throw new UnauthorizedException(apiResponse);
     }
