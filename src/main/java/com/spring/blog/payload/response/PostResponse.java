@@ -50,7 +50,7 @@ public class PostResponse {
                 .build();
     }
 
-    public static PostResponse convertToPostDto(Post post) {
+    public static PostResponse convertToPostResponse(Post post) {
         return PostResponse.builder()
                 .id(post.getId())
                 .userId(post.getUserId())

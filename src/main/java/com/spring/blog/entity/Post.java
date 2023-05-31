@@ -28,4 +28,8 @@ public class Post {
     @Column(name = "user_id")
     private Long userId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
 }

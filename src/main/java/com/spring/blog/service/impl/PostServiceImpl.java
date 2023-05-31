@@ -52,7 +52,7 @@ public class PostServiceImpl implements PostService {
 
         List<Post> listOfPosts = posts.getContent();
 
-        List<PostResponse> content = listOfPosts.stream().map(PostResponse::convertToPostDto).collect(Collectors.toList());
+        List<PostResponse> content = listOfPosts.stream().map(PostResponse::convertToPostResponse).collect(Collectors.toList());
 
         PageResponse<PostResponse> pageResource = new PageResponse<>();
 
@@ -67,7 +67,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post createPost(CreatePostRequestDto dto, UserPrincipal userPrincipal) {
+    public Post createPost(CreatePostRequestDto dto, UserPrincipal currentUser) {
 
         Post post = Post.builder()
                 .title(dto.getTitle())
@@ -75,7 +75,7 @@ public class PostServiceImpl implements PostService {
                 .date(LocalDate.builder()
                         .createdAt(LocalDateTime.now())
                         .build())
-                .userId(userPrincipal.getId())
+                .userId(currentUser.getId())
                 .build();
 
         Post createPost = postRepository.save(post);
@@ -120,17 +120,4 @@ public class PostServiceImpl implements PostService {
         throw new UnauthorizedException(apiResponse);
     }
 
-    private void validatePageNumberAndSize(int page, int size) {
-        if (page < 0) {
-            throw new BadRequestException("Page number cannot be less than zero.");
-        }
-
-        if (size < 0) {
-            throw new BadRequestException("Size number cannot be less than zero.");
-        }
-
-        if (size > AppConstants.MAX_PAGE_SIZE) {
-            throw new BadRequestException("Page size must not be greater than " + AppConstants.MAX_PAGE_SIZE);
-        }
-    }
 }
