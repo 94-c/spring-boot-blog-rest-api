@@ -10,14 +10,11 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class JoinUserRequestDto {
+public class LoginRequestDto {
 
-    @NotBlank(message = "이메일은 필수 입력 항목입니다.")
+    @NotBlank(message = "이메일을 입력해주세요.")
     private String email;
-    @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
+
+    @NotBlank(message = "패스워드를 입력해주세요.")
     private String password;
-
-    private String name;
-
-
 }

@@ -20,16 +20,4 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/join")
-    public SuccessResponse<JoinUserResponseDto> joinUser(@Valid @RequestBody JoinUserRequestDto dto) {
-        User newUser = userService.joinUser(dto);
-
-        return SuccessResponse.success(JoinUserResponseDto.builder()
-                .id(newUser.getId())
-                .email(newUser.getEmail())
-                .name(newUser.getName())
-                .createdAt(newUser.getDate().getCreatedAt())
-                .build());
-    }
-
 }
