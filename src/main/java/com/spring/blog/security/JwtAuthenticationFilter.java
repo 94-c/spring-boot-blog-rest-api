@@ -1,56 +1,53 @@
 package com.spring.blog.security;
 
 import com.spring.blog.service.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
+import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-	@Autowired
-	private JwtTokenProvider tokenProvider;
-	@Autowired
-	private CustomUserDetailsService customUserDetailsService;
+@RequiredArgsConstructor
+@Slf4j
+public class JwtAuthenticationFilter extends GenericFilterBean {
+	public static final String AUTHORIZATION_HEADER = "Authorization";
+	private final JwtTokenProvider tokenProvider;
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		try {
-			String jwt = getJwtFromRequest(request);
-
-			if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-				Long userId = tokenProvider.getUserIdFromJWT(jwt);
-
-				UserDetails userDetails = customUserDetailsService.loadUserById(userId);
-				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null,
-						userDetails.getAuthorities());
-				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-			}
-		} catch (Exception ex) {
-			LOGGER.error("Could not set user authentication in security context", ex);
+	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+		HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+		String jwt = resolveToken(httpServletRequest);
+		String requestURI = httpServletRequest.getRequestURI();
+		if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+			Authentication authentication = tokenProvider.getAuthentication(jwt);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
+		} else {
+			log.info("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
 		}
-
-		filterChain.doFilter(request, response);
+		filterChain.doFilter(servletRequest, servletResponse);
 	}
 
-	private String getJwtFromRequest(HttpServletRequest request) {
-		String bearerToken = request.getHeader("Authorization");
+	private String resolveToken(HttpServletRequest request) {
+		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-			return bearerToken.substring(7, bearerToken.length());
+			return bearerToken.substring(7);
 		}
 		return null;
 	}

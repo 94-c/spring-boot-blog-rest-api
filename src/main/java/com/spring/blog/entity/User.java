@@ -1,6 +1,6 @@
 package com.spring.blog.entity;
 
-import com.spring.blog.entity.common.DateEntity;
+import com.spring.blog.entity.common.LocalDate;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
-public class User extends DateEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +25,7 @@ public class User extends DateEntity {
     private String password;
 
     private String name;
+    private LocalDate date;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
@@ -45,5 +46,9 @@ public class User extends DateEntity {
         } else {
             this.roles = Collections.unmodifiableList(roles);
         }
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
