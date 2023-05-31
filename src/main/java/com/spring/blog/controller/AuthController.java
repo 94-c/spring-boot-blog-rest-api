@@ -6,6 +6,7 @@ import com.spring.blog.payload.request.JoinUserRequestDto;
 import com.spring.blog.payload.request.LoginRequestDto;
 import com.spring.blog.payload.response.JoinUserResponseDto;
 import com.spring.blog.payload.response.LoginResponseDto;
+import com.spring.blog.payload.response.UserResponse;
 import com.spring.blog.security.JwtTokenProvider;
 import com.spring.blog.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -33,19 +34,14 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @PostMapping("/join")
-    public SuccessResponse<JoinUserResponseDto> joinUser(@Valid @RequestBody JoinUserRequestDto dto) {
+    public SuccessResponse<UserResponse> joinUser(@Valid @RequestBody JoinUserRequestDto dto) {
         User newUser = userService.joinUser(dto);
 
-        return SuccessResponse.success(JoinUserResponseDto.builder()
-                .id(newUser.getId())
-                .email(newUser.getEmail())
-                .name(newUser.getName())
-                .createdAt(newUser.getDate().getCreatedAt())
-                .build());
+        return SuccessResponse.success(UserResponse.joinUserResponse(newUser));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<SuccessResponse<LoginResponseDto>> login(@Valid @RequestBody LoginRequestDto loginDto, HttpServletResponse response) {
+    public ResponseEntity<SuccessResponse<UserResponse>> login(@Valid @RequestBody LoginRequestDto loginDto, HttpServletResponse response) {
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
 
@@ -65,11 +61,7 @@ public class AuthController {
         HttpHeaders httpHeaders = new HttpHeaders();
 
 
-        return SuccessResponse.successResponseEntity(LoginResponseDto.builder()
-                        .token(token)
-                        .email(authentication.getName())
-                        .build()
-                , httpHeaders);
+        return SuccessResponse.successResponseEntity(UserResponse.loginResponse(authentication, token), httpHeaders);
     }
 
     @GetMapping("/logout")
