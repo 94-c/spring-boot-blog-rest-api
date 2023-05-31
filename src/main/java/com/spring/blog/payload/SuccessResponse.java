@@ -6,6 +6,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,6 +19,14 @@ public class SuccessResponse<T> {
     private T data;
 
     public static <T> SuccessResponse success(T data) {
+
+        return SuccessResponse.builder()
+                .message("success")
+                .data(data)
+                .build();
+    }
+
+    public static <T> SuccessResponse success(List<T> data) {
 
         return SuccessResponse.builder()
                 .message("success")

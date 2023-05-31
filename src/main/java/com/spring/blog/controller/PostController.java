@@ -2,6 +2,7 @@ package com.spring.blog.controller;
 
 import com.spring.blog.entity.Post;
 import com.spring.blog.payload.ApiResponse;
+import com.spring.blog.payload.PageResponse;
 import com.spring.blog.payload.SuccessResponse;
 import com.spring.blog.payload.response.PostResponse;
 import com.spring.blog.payload.request.CreatePostRequestDto;
@@ -9,6 +10,7 @@ import com.spring.blog.payload.request.UpdatePostRequestDto;
 import com.spring.blog.security.CurrentUser;
 import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.PostService;
+import com.spring.blog.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,18 @@ public class PostController {
 
     private final PostService postService;
 
+    @GetMapping
+    @ResponseStatus(value = HttpStatus.OK)
+    public SuccessResponse<PostResponse> getAllPosts(
+            @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIREACTION, required = false) String sortDir) {
+
+        PageResponse<PostResponse> pageResponse = postService.findAllPosts(pageNo, pageSize, sortBy, sortDir);
+
+        return SuccessResponse.success(pageResponse);
+    }
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(value = HttpStatus.CREATED)

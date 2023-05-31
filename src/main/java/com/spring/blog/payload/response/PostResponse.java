@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 @Data
@@ -39,6 +40,17 @@ public class PostResponse {
     }
 
     public static PostResponse findByPostResponse(Post post) {
+        return PostResponse.builder()
+                .id(post.getId())
+                .userId(post.getUserId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .createdAt(post.getDate().getCreatedAt())
+                .updatedAt(post.getDate().getUpdateAt())
+                .build();
+    }
+
+    public static PostResponse convertToPostDto(Post post) {
         return PostResponse.builder()
                 .id(post.getId())
                 .userId(post.getUserId())
