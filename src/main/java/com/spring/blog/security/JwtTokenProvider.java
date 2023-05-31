@@ -22,51 +22,52 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
-@Slf4j
-public class JwtTokenProvider implements InitializingBean {
-	private static final String AUTHORITIES_KEY = "auth";
-	private final String secret;
-	private final long tokenValidityInMilliseconds;
-	private Key key;
+public class JwtTokenProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenProvider.class);
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+    @Value("${jwt.token-validity-in-seconds}")
+    private int jwtExpirationInMs;
 
-	public JwtTokenProvider(@Value("${jwt.secret}") String secret, @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
-		this.secret = secret;
-		this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
-	}
 
-	@Override
-	public void afterPropertiesSet() {
-		byte[] keyBytes = Decoders.BASE64.decode(secret);
-		this.key = Keys.hmacShaKeyFor(keyBytes);
-	}
+    public String generateToken(Authentication authentication) {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
-	public String createToken(Authentication authentication) {
-		String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
-		long now = (new Date()).getTime();
-		Date validity = new Date(now + this.tokenValidityInMilliseconds);
-		return Jwts.builder().setSubject(authentication.getName()).claim(AUTHORITIES_KEY, authorities).signWith(key, SignatureAlgorithm.HS512).setExpiration(validity).compact();
-	}
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
-	public Authentication getAuthentication(String token) {
-		Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-		Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(",")).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-		User principal = new User(claims.getSubject(), "", authorities);
-		return new UsernamePasswordAuthenticationToken(principal, token, authorities);
-	}
+        return Jwts.builder()
+                .setSubject(Long.toString(userPrincipal.getId()))
+                .setIssuedAt(new Date())
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
+    }
 
-	public boolean validateToken(String token) {
-		try {
-			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-			return true;
-		} catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-			log.info("잘못된 JWT 서명입니다.");
-		} catch (ExpiredJwtException e) {
-			log.info("만료된 JWT 토큰입니다.");
-		} catch (UnsupportedJwtException e) {
-			log.info("지원되지 않는 JWT 토큰입니다.");
-		} catch (IllegalArgumentException e) {
-			log.info("JWT 토큰이 잘못되었습니다.");
-		}
-		return false;
-	}
+    public Long getUserIdFromJWT(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return Long.valueOf(claims.getSubject());
+    }
+
+    public boolean validateToken(String authToken) {
+        try {
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            return true;
+        } catch (SignatureException ex) {
+            LOGGER.error("Invalid JWT signature");
+        } catch (MalformedJwtException ex) {
+            LOGGER.error("Invalid JWT token");
+        } catch (ExpiredJwtException ex) {
+            LOGGER.error("Expired JWT token");
+        } catch (UnsupportedJwtException ex) {
+            LOGGER.error("Unsupported JWT token");
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error("JWT claims string is empty");
+        }
+        return false;
+    }
 }

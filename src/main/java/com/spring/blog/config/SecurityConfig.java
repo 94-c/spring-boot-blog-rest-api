@@ -37,11 +37,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserAuthenticationProvider userAuthenticationProvider;
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenProvider);
 
         http.cors().and().csrf().disable()
                 .exceptionHandling()

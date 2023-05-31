@@ -52,7 +52,7 @@ public class AuthController {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String token = jwtTokenProvider.createToken(authentication);
+        String token = jwtTokenProvider.generateToken(authentication);
 
         Cookie myCookie = new Cookie("cookie", token);
 

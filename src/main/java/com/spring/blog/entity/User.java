@@ -1,12 +1,18 @@
 package com.spring.blog.entity;
 
 import com.spring.blog.entity.common.LocalDate;
+import com.spring.blog.security.UserPrincipal;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -51,4 +57,6 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+
 }

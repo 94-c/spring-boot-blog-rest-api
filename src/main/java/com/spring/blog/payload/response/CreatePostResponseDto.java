@@ -3,17 +3,15 @@ package com.spring.blog.payload.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Builder
 @Data
-public class JoinUserResponseDto {
-
+public class CreatePostResponseDto {
     private Long id;
-    private String email;
-    private String name;
+    private String title;
+    private String content;
+    private Long userId;
     private LocalDateTime createdAt;
 
 }
