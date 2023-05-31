@@ -2,9 +2,9 @@ package com.spring.blog.controller;
 
 import com.spring.blog.entity.Post;
 import com.spring.blog.payload.SuccessResponse;
-import com.spring.blog.payload.dto.PostDto;
+import com.spring.blog.payload.dto.PostResponse;
 import com.spring.blog.payload.request.CreatePostRequestDto;
-import com.spring.blog.payload.response.CreatePostResponseDto;
+import com.spring.blog.payload.request.UpdatePostRequestDto;
 import com.spring.blog.security.CurrentUser;
 import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.PostService;
@@ -14,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -26,35 +25,35 @@ public class PostController {
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public SuccessResponse<CreatePostResponseDto> createPost(@Valid @RequestBody CreatePostRequestDto dto,
-                                                             @CurrentUser UserPrincipal currentUser) {
+    public SuccessResponse<PostResponse> createPost(@Valid @RequestBody CreatePostRequestDto dto,
+                                                    @CurrentUser UserPrincipal currentUser) {
 
         Post createPost = postService.createPost(dto, currentUser);
 
-        return SuccessResponse.success(CreatePostResponseDto.builder()
-                .id(createPost.getId())
-                .userId(createPost.getUserId())
-                .title(createPost.getTitle())
-                .content(createPost.getContent())
-                .createdAt(createPost.getDate().getCreatedAt())
-                .build());
+        return SuccessResponse.success(PostResponse.createPostResponse(createPost));
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(value = HttpStatus.OK)
-    public SuccessResponse<PostDto> findByPost(@PathVariable(name = "id") Long postId) {
+    public SuccessResponse<PostResponse> findByPost(@PathVariable(name = "id") Long postId) {
 
         Post findByPost = postService.findByPost(postId);
 
-        return SuccessResponse.success(PostDto.builder()
-                .id(findByPost.getId())
-                .userId(findByPost.getUserId())
-                .title(findByPost.getTitle())
-                .content(findByPost.getContent())
-                .createdAt(findByPost.getDate().getCreatedAt())
-                .updatedAt(findByPost.getDate().getUpdateAt())
-                .build());
+        return SuccessResponse.success(PostResponse.findByPostResponse(findByPost));
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @ResponseStatus(value = HttpStatus.OK)
+    public SuccessResponse<PostResponse> updatePost(@PathVariable(name = "id") Long postId,
+                                                    @Valid @RequestBody UpdatePostRequestDto dto,
+                                                    @CurrentUser UserPrincipal currentUser) {
+        Post updatePost = postService.updatePost(postId, dto, currentUser);
+
+        return SuccessResponse.success(PostResponse.updatePostResponse(updatePost));
+    }
+
+
 
 
 }

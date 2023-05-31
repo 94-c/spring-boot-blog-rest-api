@@ -1,4 +1,4 @@
-package com.spring.blog.payload.dto;
+package com.spring.blog.payload.request;
 
 import lombok.Builder;
 import lombok.Data;
@@ -7,13 +7,10 @@ import java.time.LocalDateTime;
 
 @Builder
 @Data
-public class PostDto {
+public class UpdatePostRequestDto {
 
-    private Long id;
-    private Long userId;
     private String title;
     private String content;
-    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
 }
