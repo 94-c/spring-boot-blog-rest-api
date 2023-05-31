@@ -108,6 +108,9 @@ public class PostServiceImpl implements PostService {
                 || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
             findByPost.setTitle(dto.getTitle());
             findByPost.setContent(dto.getContent());
+            findByPost.setDate(LocalDate.builder()
+                    .updateAt(LocalDateTime.now())
+                    .build());
             findByPost.setCategory(category);
             return postRepository.save(findByPost);
         }

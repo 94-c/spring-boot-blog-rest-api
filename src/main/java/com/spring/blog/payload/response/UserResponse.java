@@ -36,4 +36,11 @@ public class UserResponse {
                 .build();
     }
 
+    public static UserResponse convertToUserDTO(User user) {
+        return UserResponse.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .build();
+    }
 }
