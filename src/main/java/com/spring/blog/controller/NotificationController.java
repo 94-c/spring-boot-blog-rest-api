@@ -1,9 +1,11 @@
 package com.spring.blog.controller;
 
 import com.spring.blog.entity.Notification;
+import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
 import com.spring.blog.payload.SuccessResponse;
 import com.spring.blog.payload.request.CreateNotificationRequestDto;
+import com.spring.blog.payload.request.UpdateNotificationRequestDto;
 import com.spring.blog.payload.response.NotificationResponse;
 import com.spring.blog.payload.response.PostResponse;
 import com.spring.blog.security.CurrentUser;
@@ -12,6 +14,7 @@ import com.spring.blog.service.NotificationService;
 import com.spring.blog.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,8 +51,33 @@ public class NotificationController {
         return SuccessResponse.success(NotificationResponse.createNotificationResponse(createNotification));
     }
 
-    //TODO 공지사항 상세보기
-    //TODO 공지사항 수정하기
-    //TODO 공지사항 삭제하기
+    @GetMapping("/{id}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public SuccessResponse<NotificationResponse> findByNotification(@PathVariable(name = "id") Long notificationId) {
 
+        Notification findByNotification = notificationService.findByNotification(notificationId);
+
+        return SuccessResponse.success(NotificationResponse.findNotificationResponse(findByNotification));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public SuccessResponse<NotificationResponse> updateNotification(@PathVariable(name = "id") Long notificationId,
+                                                                    @Valid @RequestBody UpdateNotificationRequestDto dto,
+                                                                    @CurrentUser UserPrincipal currentUser) {
+
+        Notification updateNotification = notificationService.updateNotification(notificationId, dto, currentUser);
+
+        return SuccessResponse.success(NotificationResponse.updateNotificationResponse(updateNotification));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntity<ApiResponse> deleteNotification(@PathVariable(name = "id") Long notificationId, @CurrentUser UserPrincipal currentUser) {
+        ApiResponse apiResponse = notificationService.deleteNotification(notificationId, currentUser);
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
 }

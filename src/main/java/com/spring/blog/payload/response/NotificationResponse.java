@@ -28,6 +28,27 @@ public class NotificationResponse {
                 .build();
     }
 
+    public static NotificationResponse findNotificationResponse(Notification notification) {
+        return NotificationResponse.builder()
+                .id(notification.getId())
+                .title(notification.getTitle())
+                .content(notification.getContent())
+                .createdAt(notification.getDate().getCreatedAt())
+                .updatedAt(notification.getDate().getUpdateAt())
+                .user(UserResponse.convertToUserDTO(notification.getUser()))
+                .build();
+    }
+
+    public static NotificationResponse updateNotificationResponse(Notification notification) {
+        return NotificationResponse.builder()
+                .id(notification.getId())
+                .title(notification.getTitle())
+                .content(notification.getContent())
+                .updatedAt(notification.getDate().getUpdateAt())
+                .user(UserResponse.convertToUserDTO(notification.getUser()))
+                .build();
+    }
+
     public static NotificationResponse convertToNotificationDto(Notification notification) {
         return NotificationResponse.builder()
                 .id(notification.getId())
