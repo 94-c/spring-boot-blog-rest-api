@@ -36,7 +36,7 @@ public class UserResponse {
                 .build();
     }
 
-    public static UserResponse convertToUserDTO(User user) {
+    public static UserResponse convertToUserResponse(User user) {
         return UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())

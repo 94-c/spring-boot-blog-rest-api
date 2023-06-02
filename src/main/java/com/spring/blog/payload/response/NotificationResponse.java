@@ -24,7 +24,7 @@ public class NotificationResponse {
                 .title(notification.getTitle())
                 .content(notification.getContent())
                 .createdAt(notification.getDate().getCreatedAt())
-                .user(UserResponse.convertToUserDTO(notification.getUser()))
+                .user(UserResponse.convertToUserResponse(notification.getUser()))
                 .build();
     }
 
@@ -35,7 +35,7 @@ public class NotificationResponse {
                 .content(notification.getContent())
                 .createdAt(notification.getDate().getCreatedAt())
                 .updatedAt(notification.getDate().getUpdateAt())
-                .user(UserResponse.convertToUserDTO(notification.getUser()))
+                .user(UserResponse.convertToUserResponse(notification.getUser()))
                 .build();
     }
 
@@ -45,7 +45,7 @@ public class NotificationResponse {
                 .title(notification.getTitle())
                 .content(notification.getContent())
                 .updatedAt(notification.getDate().getUpdateAt())
-                .user(UserResponse.convertToUserDTO(notification.getUser()))
+                .user(UserResponse.convertToUserResponse(notification.getUser()))
                 .build();
     }
 
@@ -56,7 +56,7 @@ public class NotificationResponse {
                 .content(notification.getContent())
                 .createdAt(notification.getDate().getCreatedAt())
                 .updatedAt(notification.getDate().getUpdateAt())
-                .user(UserResponse.convertToUserDTO(notification.getUser()))
+                .user(UserResponse.convertToUserResponse(notification.getUser()))
                 .build();
     }
 

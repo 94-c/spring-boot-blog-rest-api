@@ -11,18 +11,30 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "notifications")
-public class Notification {
+@Table(name = "comments")
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
+
     private String content;
+
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Column(name = "parent_id")
+    private Long parentId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "post_id")
+    private Post post;
+
     @Embedded
     private LocalDate date;
 
+    @Column(name = "is_enable", columnDefinition = "1")
+    private Long isEnable;
+
 }
+
