@@ -1,11 +1,14 @@
 package com.spring.blog.payload.response;
 
+import com.spring.blog.entity.Comment;
 import com.spring.blog.entity.Post;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Builder
 @Data
@@ -52,8 +55,6 @@ public class PostResponse {
                 .build();
     }
 
-
-
     public static PostResponse convertToPostResponse(Post post) {
         return PostResponse.builder()
                 .id(post.getId())
@@ -63,6 +64,12 @@ public class PostResponse {
                 .createdAt(post.getDate().getCreatedAt())
                 .updatedAt(post.getDate().getUpdateAt())
                 .build();
+    }
+
+    public static List<PostResponse> convertToPostResponseList(List<Post> posts) {
+        Stream<Post> stream = posts.stream();
+
+        return stream.map(PostResponse::convertToPostResponse).collect(Collectors.toList());
     }
 
 }
