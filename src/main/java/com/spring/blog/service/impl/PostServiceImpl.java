@@ -38,7 +38,6 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
-    private final UserRepository userRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -67,7 +66,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post createPost(PostRequestDto dto, UserPrincipal currentUser) {
+    public PostResponse createPost(PostRequestDto dto, UserPrincipal currentUser) {
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException(CATEGORY, ID, dto.getCategoryId()));
 
@@ -94,7 +93,7 @@ public class PostServiceImpl implements PostService {
 
         Post createPost = postRepository.save(post);
 
-        return createPost;
+        return PostResponse.createPostResponse(createPost);
     }
 
     @Override

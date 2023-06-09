@@ -27,7 +27,7 @@ public class PostController {
 
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
-    public SuccessResponse<PostResponse> getAllPosts(
+    public ResponseEntity<PageResponse<PostResponse>> getAllPosts(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
@@ -35,37 +35,35 @@ public class PostController {
 
         PageResponse<PostResponse> pageResponse = postService.findAllPosts(pageNo, pageSize, sortBy, sortDir);
 
-        return SuccessResponse.success(pageResponse);
+        return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
     @PostMapping
     @PreAuthorize("hasRole('USER')")
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public SuccessResponse<PostResponse> createPost(@Valid @RequestBody PostRequestDto dto,
+    public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostRequestDto dto,
                                                     @CurrentUser UserPrincipal currentUser) {
 
-        Post createPost = postService.createPost(dto, currentUser);
+        PostResponse createPost = postService.createPost(dto, currentUser);
 
-        return SuccessResponse.success(PostResponse.createPostResponse(createPost));
+        return new ResponseEntity<>(createPost, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(value = HttpStatus.OK)
-    public SuccessResponse<PostResponse> findByPost(@PathVariable(name = "id") Long postId) {
+    public ResponseEntity<Post> findByPost(@PathVariable(name = "id") Long postId) {
 
         Post findByPost = postService.findByPost(postId);
 
-        return SuccessResponse.success(PostResponse.findByPostResponse(findByPost));
+        return new ResponseEntity<>(findByPost, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseStatus(value = HttpStatus.OK)
-    public SuccessResponse<PostResponse> updatePost(@PathVariable(name = "id") Long postId,
+    public ResponseEntity<Post> updatePost(@PathVariable(name = "id") Long postId,
                                                     @Valid @RequestBody PostRequestDto dto,
                                                     @CurrentUser UserPrincipal currentUser) {
         Post updatePost = postService.updatePost(postId, dto, currentUser);
 
-        return SuccessResponse.success(PostResponse.updatePostResponse(updatePost));
+        return new ResponseEntity<>(updatePost, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

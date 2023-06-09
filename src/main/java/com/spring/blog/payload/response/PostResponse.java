@@ -1,11 +1,11 @@
 package com.spring.blog.payload.response;
 
-import com.spring.blog.entity.Comment;
 import com.spring.blog.entity.Post;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,6 +21,16 @@ public class PostResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CommentResponse> comments;
+    private List<String> tags;
+
+    public void setTags(List<String> tags) {
+
+        if (tags == null) {
+            this.tags = null;
+        } else {
+            this.tags = Collections.unmodifiableList(tags);
+        }
+    }
 
     public static PostResponse createPostResponse(Post post) {
         return PostResponse.builder()

@@ -11,7 +11,7 @@ public interface PostService {
 
     PageResponse<PostResponse> findAllPosts(int pageNo, int pageSize, String sortBy, String sortDir);
 
-    Post createPost(PostRequestDto dto, UserPrincipal currentUser);
+    PostResponse createPost(PostRequestDto dto, UserPrincipal currentUser);
 
     Post findByPost(Long postId);
 
