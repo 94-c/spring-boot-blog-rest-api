@@ -39,9 +39,9 @@ public class CategoryController {
 
     @PostMapping
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Category> createCategories(@Valid @RequestBody CategoryRequestDto dto,
+    public ResponseEntity<CategoryResponse> createCategories(@Valid @RequestBody CategoryRequestDto dto,
                                                      @CurrentUser UserPrincipal currentUser) {
-        Category createCategory = categoryService.createCategory(dto, currentUser);
+        CategoryResponse createCategory = categoryService.createCategory(dto, currentUser);
 
         return new ResponseEntity<>(createCategory, HttpStatus.CREATED);
     }

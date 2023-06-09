@@ -11,7 +11,7 @@ import com.spring.blog.security.UserPrincipal;
 public interface CategoryService {
 
     PageResponse<CategoryResponse> findByAllCategories(int pageNo, int pageSize, String sortBy, String sortDir);
-    Category createCategory(CategoryRequestDto dto, UserPrincipal currentUser);
+    CategoryResponse createCategory(CategoryRequestDto dto, UserPrincipal currentUser);
 
     Category findByCategory(Long categoryId);
 

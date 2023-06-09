@@ -64,7 +64,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment createComment(Long postId, CommentRequestDto dto, UserPrincipal currentUser) {
+    public CommentResponse createComment(Long postId, CommentRequestDto dto, UserPrincipal currentUser) {
         Post findByPost = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException(POST, ID, postId));
 
@@ -80,7 +80,7 @@ public class CommentServiceImpl implements CommentService {
 
         Comment createComment = commentRepository.save(comment);
 
-        return createComment;
+        return CommentResponse.convertToCommentResponse(createComment);
     }
 
     @Override

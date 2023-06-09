@@ -29,14 +29,14 @@ public class TagController {
                                               @CurrentUser UserPrincipal currentUser) {
         TagResponse newTag = tagService.createTag(dto, currentUser);
 
-        return new ResponseEntity< >(newTag, HttpStatus.CREATED);
+        return new ResponseEntity<>(newTag, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Tag> getTag(@PathVariable(name = "id") Long id) {
         Tag tag = tagService.findByTag(id);
 
-        return new ResponseEntity< >(tag, HttpStatus.OK);
+        return new ResponseEntity<>(tag, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -47,7 +47,7 @@ public class TagController {
 
         Tag updatedTag = tagService.updateTag(id, dto, currentUser);
 
-        return new ResponseEntity< >(updatedTag, HttpStatus.OK);
+        return new ResponseEntity<>(updatedTag, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -56,7 +56,7 @@ public class TagController {
                                                  @CurrentUser UserPrincipal currentUser) {
         ApiResponse apiResponse = tagService.deleteTag(id, currentUser);
 
-        return new ResponseEntity< >(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
 }

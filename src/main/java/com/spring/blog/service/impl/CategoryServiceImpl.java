@@ -60,7 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category createCategory(CategoryRequestDto dto, UserPrincipal currentUser) {
+    public CategoryResponse createCategory(CategoryRequestDto dto, UserPrincipal currentUser) {
 
         Category category = Category.builder()
                 .name(dto.getName())
@@ -70,7 +70,9 @@ public class CategoryServiceImpl implements CategoryService {
                 .userId(currentUser.getId())
                 .build();
 
-        return categoryRepository.save(category);
+        Category createCategory = categoryRepository.save(category);
+
+        return CategoryResponse.convertToCategoryResponse(category);
     }
 
 
