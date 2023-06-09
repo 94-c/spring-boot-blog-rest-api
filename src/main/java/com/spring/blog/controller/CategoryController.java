@@ -5,10 +5,8 @@ import com.spring.blog.exception.UnauthorizedException;
 import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
 import com.spring.blog.payload.SuccessResponse;
-import com.spring.blog.payload.request.CreateCategoryRequestDto;
-import com.spring.blog.payload.request.UpdateCategoryRequestDto;
+import com.spring.blog.payload.request.CategoryRequestDto;
 import com.spring.blog.payload.response.CategoryResponse;
-import com.spring.blog.payload.response.PostResponse;
 import com.spring.blog.security.CurrentUser;
 import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.CategoryService;
@@ -44,7 +42,7 @@ public class CategoryController {
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public SuccessResponse<CategoryResponse> createCategories(@Valid @RequestBody CreateCategoryRequestDto dto,
+    public SuccessResponse<CategoryResponse> createCategories(@Valid @RequestBody CategoryRequestDto dto,
                                                               @CurrentUser UserPrincipal currentUser) {
         Category createCategory = categoryService.createCategory(dto, currentUser);
 
@@ -63,7 +61,7 @@ public class CategoryController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseStatus(value = HttpStatus.OK)
     public SuccessResponse<CategoryResponse> updateCategory(@PathVariable(name = "id") Long id,
-                                                            @Valid @RequestBody UpdateCategoryRequestDto dto,
+                                                            @Valid @RequestBody CategoryRequestDto dto,
                                                             @CurrentUser UserPrincipal currentUser) throws UnauthorizedException {
         Category updateCategory = categoryService.updateCategory(id, dto, currentUser);
 

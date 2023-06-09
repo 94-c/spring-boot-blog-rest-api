@@ -1,11 +1,11 @@
 package com.spring.blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.spring.blog.entity.common.LocalDate;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,13 +20,20 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String tag;
+    @Column(nullable = true, unique = true)
+    private String name;
 
-    @ToString.Exclude
-    @ManyToMany(mappedBy = "tags")
-    private Set<Post> posts = new LinkedHashSet<>();
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "post_tag",
+            joinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"))
+    private List<Post> posts;
 
     @Embedded
     private LocalDate date;
 
+    public Tag(String name) {
+        this.name = name;
+    }
 }

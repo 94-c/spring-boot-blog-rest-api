@@ -4,10 +4,8 @@ import com.spring.blog.entity.Notification;
 import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
 import com.spring.blog.payload.SuccessResponse;
-import com.spring.blog.payload.request.CreateNotificationRequestDto;
-import com.spring.blog.payload.request.UpdateNotificationRequestDto;
+import com.spring.blog.payload.request.NotificationRequestDto;
 import com.spring.blog.payload.response.NotificationResponse;
-import com.spring.blog.payload.response.PostResponse;
 import com.spring.blog.security.CurrentUser;
 import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.NotificationService;
@@ -43,7 +41,7 @@ public class NotificationController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public SuccessResponse<NotificationResponse> createNotification(@Valid @RequestBody CreateNotificationRequestDto dto,
+    public SuccessResponse<NotificationResponse> createNotification(@Valid @RequestBody NotificationRequestDto dto,
                                                                     @CurrentUser UserPrincipal currentUser) {
 
         Notification createNotification = notificationService.createNotification(dto, currentUser);
@@ -64,7 +62,7 @@ public class NotificationController {
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(value = HttpStatus.CREATED)
     public SuccessResponse<NotificationResponse> updateNotification(@PathVariable(name = "id") Long notificationId,
-                                                                    @Valid @RequestBody UpdateNotificationRequestDto dto,
+                                                                    @Valid @RequestBody NotificationRequestDto dto,
                                                                     @CurrentUser UserPrincipal currentUser) {
 
         Notification updateNotification = notificationService.updateNotification(notificationId, dto, currentUser);

@@ -7,13 +7,11 @@ import com.spring.blog.exception.ResourceNotFoundException;
 import com.spring.blog.exception.UnauthorizedException;
 import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
-import com.spring.blog.payload.request.CreateCategoryRequestDto;
-import com.spring.blog.payload.request.UpdateCategoryRequestDto;
+import com.spring.blog.payload.request.CategoryRequestDto;
 import com.spring.blog.payload.response.CategoryResponse;
 import com.spring.blog.repository.CategoryRepository;
 import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.CategoryService;
-import com.spring.blog.utils.AppUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,7 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category createCategory(CreateCategoryRequestDto dto, UserPrincipal currentUser) {
+    public Category createCategory(CategoryRequestDto dto, UserPrincipal currentUser) {
 
         Category category = Category.builder()
                 .name(dto.getName())
@@ -86,7 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
-    public Category updateCategory(Long categoryId, UpdateCategoryRequestDto dto, UserPrincipal currentUser) throws UnauthorizedException {
+    public Category updateCategory(Long categoryId, CategoryRequestDto dto, UserPrincipal currentUser) throws UnauthorizedException {
         Category findByCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException(CATEGORY, ID, categoryId));
 
         if (findByCategory.getUserId().equals(currentUser.getId())

@@ -1,25 +1,20 @@
 package com.spring.blog.service.impl;
 
-import com.spring.blog.entity.Category;
-import com.spring.blog.entity.Post;
-import com.spring.blog.entity.Role;
-import com.spring.blog.entity.User;
+import com.spring.blog.entity.*;
 import com.spring.blog.entity.common.LocalDate;
 import com.spring.blog.entity.common.RoleName;
-import com.spring.blog.exception.BadRequestException;
 import com.spring.blog.exception.ResourceNotFoundException;
 import com.spring.blog.exception.UnauthorizedException;
 import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
-import com.spring.blog.payload.request.CreatePostRequestDto;
-import com.spring.blog.payload.request.UpdatePostRequestDto;
+import com.spring.blog.payload.request.PostRequestDto;
 import com.spring.blog.payload.response.PostResponse;
 import com.spring.blog.repository.CategoryRepository;
 import com.spring.blog.repository.PostRepository;
+import com.spring.blog.repository.TagRepository;
 import com.spring.blog.repository.UserRepository;
 import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.PostService;
-import com.spring.blog.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +37,8 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final CategoryRepository categoryRepository;
-
+    private final TagRepository tagRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -71,10 +67,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post createPost(CreatePostRequestDto dto, UserPrincipal currentUser) {
-
+    public Post createPost(PostRequestDto dto, UserPrincipal currentUser) {
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException(CATEGORY, ID, dto.getCategoryId()));
+
+        List<Tag> tags = new ArrayList<>(dto.getTags().size());
+
+        //게시글 등록 시, 태그 기능 등록
+        for (String name : dto.getTags()) {
+            Tag tag = tagRepository.findByName(name);
+            tag = tag == null ? tagRepository.save(new Tag(name)) : tag;
+
+            tags.add(tag);
+        }
 
         Post post = Post.builder()
                 .title(dto.getTitle())
@@ -84,6 +89,7 @@ public class PostServiceImpl implements PostService {
                         .build())
                 .userId(currentUser.getId())
                 .category(category)
+                .tags(tags)
                 .build();
 
         Post createPost = postRepository.save(post);
@@ -97,7 +103,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post updatePost(Long postId, UpdatePostRequestDto dto, UserPrincipal currentUser) {
+    public Post updatePost(Long postId, PostRequestDto dto, UserPrincipal currentUser) {
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException(CATEGORY, ID, dto.getCategoryId()));
 

@@ -5,8 +5,7 @@ import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
 import com.spring.blog.payload.SuccessResponse;
 import com.spring.blog.payload.response.PostResponse;
-import com.spring.blog.payload.request.CreatePostRequestDto;
-import com.spring.blog.payload.request.UpdatePostRequestDto;
+import com.spring.blog.payload.request.PostRequestDto;
 import com.spring.blog.security.CurrentUser;
 import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.PostService;
@@ -41,7 +40,7 @@ public class PostController {
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(value = HttpStatus.CREATED)
-    public SuccessResponse<PostResponse> createPost(@Valid @RequestBody CreatePostRequestDto dto,
+    public SuccessResponse<PostResponse> createPost(@Valid @RequestBody PostRequestDto dto,
                                                     @CurrentUser UserPrincipal currentUser) {
 
         Post createPost = postService.createPost(dto, currentUser);
@@ -62,7 +61,7 @@ public class PostController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseStatus(value = HttpStatus.OK)
     public SuccessResponse<PostResponse> updatePost(@PathVariable(name = "id") Long postId,
-                                                    @Valid @RequestBody UpdatePostRequestDto dto,
+                                                    @Valid @RequestBody PostRequestDto dto,
                                                     @CurrentUser UserPrincipal currentUser) {
         Post updatePost = postService.updatePost(postId, dto, currentUser);
 

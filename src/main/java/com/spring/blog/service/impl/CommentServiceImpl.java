@@ -8,10 +8,8 @@ import com.spring.blog.exception.ResourceNotFoundException;
 import com.spring.blog.exception.UnauthorizedException;
 import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
-import com.spring.blog.payload.request.CreateCommentRequestDto;
-import com.spring.blog.payload.request.UpdateCommentRequestDto;
+import com.spring.blog.payload.request.CommentRequestDto;
 import com.spring.blog.payload.response.CommentResponse;
-import com.spring.blog.payload.response.PostResponse;
 import com.spring.blog.repository.CommentRepository;
 import com.spring.blog.repository.PostRepository;
 import com.spring.blog.security.UserPrincipal;
@@ -66,7 +64,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment createComment(Long postId, CreateCommentRequestDto dto, UserPrincipal currentUser) {
+    public Comment createComment(Long postId, CommentRequestDto dto, UserPrincipal currentUser) {
         Post findByPost = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException(POST, ID, postId));
 
@@ -93,7 +91,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment updateComment(Long postId, Long commentId, UpdateCommentRequestDto dto, UserPrincipal currentUser) {
+    public Comment updateComment(Long postId, Long commentId, CommentRequestDto dto, UserPrincipal currentUser) {
         Post findByPost = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException(POST, ID, postId));
 

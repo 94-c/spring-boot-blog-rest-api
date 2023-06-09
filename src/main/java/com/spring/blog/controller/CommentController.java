@@ -4,10 +4,8 @@ import com.spring.blog.entity.Comment;
 import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
 import com.spring.blog.payload.SuccessResponse;
-import com.spring.blog.payload.request.CreateCommentRequestDto;
-import com.spring.blog.payload.request.UpdateCommentRequestDto;
+import com.spring.blog.payload.request.CommentRequestDto;
 import com.spring.blog.payload.response.CommentResponse;
-import com.spring.blog.payload.response.PostResponse;
 import com.spring.blog.security.CurrentUser;
 import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.CommentService;
@@ -44,7 +42,7 @@ public class CommentController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @ResponseStatus(value = HttpStatus.CREATED)
     public SuccessResponse<CommentResponse> createComment(@PathVariable(name = "postId") Long postId,
-                                                          @Valid @RequestBody CreateCommentRequestDto dto,
+                                                          @Valid @RequestBody CommentRequestDto dto,
                                                           @CurrentUser UserPrincipal currentUser) {
 
         Comment createComment = commentService.createComment(postId, dto, currentUser);
@@ -66,7 +64,7 @@ public class CommentController {
     @ResponseStatus(value = HttpStatus.OK)
     public SuccessResponse<CommentResponse> updateComment(@PathVariable(name = "postId") Long postId,
                                                           @PathVariable(name = "id") Long id,
-                                                          @Valid @RequestBody UpdateCommentRequestDto dto,
+                                                          @Valid @RequestBody CommentRequestDto dto,
                                                           @CurrentUser UserPrincipal currentUser) {
 
         Comment updateComment = commentService.updateComment(postId, id, dto, currentUser);

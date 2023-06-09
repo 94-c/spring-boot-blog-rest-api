@@ -8,8 +8,7 @@ import com.spring.blog.exception.ResourceNotFoundException;
 import com.spring.blog.exception.UnauthorizedException;
 import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
-import com.spring.blog.payload.request.CreateNotificationRequestDto;
-import com.spring.blog.payload.request.UpdateNotificationRequestDto;
+import com.spring.blog.payload.request.NotificationRequestDto;
 import com.spring.blog.payload.response.NotificationResponse;
 import com.spring.blog.repository.NotificationRepository;
 import com.spring.blog.repository.UserRepository;
@@ -65,7 +64,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification createNotification(CreateNotificationRequestDto dto, UserPrincipal currentUser) {
+    public Notification createNotification(NotificationRequestDto dto, UserPrincipal currentUser) {
         User user = userRepository.findById(currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(USER, ID, 1L));
 
@@ -87,7 +86,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification updateNotification(Long notificationId, UpdateNotificationRequestDto dto, UserPrincipal currentUser) {
+    public Notification updateNotification(Long notificationId, NotificationRequestDto dto, UserPrincipal currentUser) {
         User user = userRepository.findById(currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(USER, ID, 1L));
 

@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 
 @Builder
 @Data
-public class CreateCommentRequestDto {
+public class CategoryRequestDto {
 
-    @NotBlank(message = "댓글을 작성해주세요.")
-    private String content;
-    private Long userId;
+    @NotBlank(message = "카테고리명을 작성해주세요.")
+    private String name;
+
     private LocalDateTime createdAt;
 
 }
