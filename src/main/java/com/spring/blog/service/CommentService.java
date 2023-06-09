@@ -11,7 +11,7 @@ public interface CommentService {
 
     PageResponse<CommentResponse> findAllComments(int pageNo, int pageSize, String sortBy, String sortDir);
 
-    Comment createComment(Long postId, CommentRequestDto dto, UserPrincipal currentUser);
+    CommentResponse createComment(Long postId, CommentRequestDto dto, UserPrincipal currentUser);
 
     Comment findByComment(Long postId, Long commentId);
 

@@ -26,8 +26,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping
-    @ResponseStatus(value = HttpStatus.OK)
-    public SuccessResponse<CommentResponse> getAllPosts(
+    public ResponseEntity<PageResponse<CommentResponse>> getAllPosts(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
@@ -35,28 +34,26 @@ public class CommentController {
 
         PageResponse<CommentResponse> pageResponse = commentService.findAllComments(pageNo, pageSize, sortBy, sortDir);
 
-        return SuccessResponse.success(pageResponse);
+        return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public SuccessResponse<CommentResponse> createComment(@PathVariable(name = "postId") Long postId,
+    public ResponseEntity<CommentResponse> createComment(@PathVariable(name = "postId") Long postId,
                                                           @Valid @RequestBody CommentRequestDto dto,
                                                           @CurrentUser UserPrincipal currentUser) {
 
-        Comment createComment = commentService.createComment(postId, dto, currentUser);
+        CommentResponse createComment = commentService.createComment(postId, dto, currentUser);
 
-        return SuccessResponse.success(CommentResponse.createCommentResponse(createComment));
+        return new ResponseEntity<>(createComment, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(value = HttpStatus.OK)
-    public SuccessResponse<CommentResponse> findByComment(@PathVariable(name = "postId") Long postId,
+    public ResponseEntity<Comment> findByComment(@PathVariable(name = "postId") Long postId,
                                                           @PathVariable(name = "id") Long id) {
         Comment findByComment =commentService.findByComment(postId, id);
 
-        return SuccessResponse.success(CommentResponse.findCommentResponse(findByComment));
+        return new ResponseEntity<>(findByComment, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
