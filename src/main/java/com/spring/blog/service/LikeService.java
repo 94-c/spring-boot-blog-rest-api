@@ -6,9 +6,9 @@ import com.spring.blog.security.UserPrincipal;
 
 public interface LikeService {
 
-    boolean hasLikePost(Post post, UserPrincipal currentUser);
-    Like createLikePost(Post post, UserPrincipal currentUser);
-    void deleteLikePost(Post post, UserPrincipal currentUser);
-    Like updateLikeOfPost(Long postId, String email);
+    boolean hasLikePost(Post post, Long userId);
+    Like createLikePost(Post post, Long userId);
+    void deleteLikePost(Post post, Long userId);
+    Like updateLikeOfPost(Long postId, UserPrincipal currentUser);
 
 }

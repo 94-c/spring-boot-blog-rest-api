@@ -37,4 +37,20 @@ public class Post {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
+    @Column(nullable = true)
+    private int liked; // 좋아요 수
+
+    public void increaseLikeCount() {
+        this.liked += 1;
+    }
+
+    public void decreaseLikeCount() {
+        this.liked -= 1;
+    }
+
+    public void setLiked(int liked) {
+        this.liked = liked;
+    }
+
+
 }
