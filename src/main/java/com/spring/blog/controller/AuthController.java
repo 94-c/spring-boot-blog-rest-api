@@ -32,10 +32,11 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @PostMapping("/join")
-    public SuccessResponse<UserResponse> joinUser(@Valid @RequestBody JoinUserRequestDto dto) {
+    public ResponseEntity<User> joinUser(@Valid @RequestBody JoinUserRequestDto dto) {
+
         User newUser = userService.joinUser(dto);
 
-        return SuccessResponse.success(UserResponse.joinUserResponse(newUser));
+        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -53,8 +54,6 @@ public class AuthController {
         myCookie.setHttpOnly(true);
         myCookie.setMaxAge(300);
         response.addCookie(myCookie);
-
-        System.out.println(authentication.getName());
 
         HttpHeaders httpHeaders = new HttpHeaders();
 
