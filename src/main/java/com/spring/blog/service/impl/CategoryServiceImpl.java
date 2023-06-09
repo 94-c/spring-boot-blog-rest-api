@@ -70,9 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .userId(currentUser.getId())
                 .build();
 
-        Category createCategory = categoryRepository.save(category);
-
-        return createCategory;
+        return categoryRepository.save(category);
     }
 
 
