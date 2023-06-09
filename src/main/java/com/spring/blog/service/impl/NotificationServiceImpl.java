@@ -64,7 +64,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Notification createNotification(NotificationRequestDto dto, UserPrincipal currentUser) {
+    public NotificationResponse createNotification(NotificationRequestDto dto, UserPrincipal currentUser) {
         User user = userRepository.findById(currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(USER, ID, 1L));
 
@@ -77,7 +77,9 @@ public class NotificationServiceImpl implements NotificationService {
                         .build())
                 .build();
 
-        return notificationRepository.save(notification);
+        Notification createNotification = notificationRepository.save(notification);
+
+        return NotificationResponse.createNotificationResponse(createNotification);
     }
 
     @Override

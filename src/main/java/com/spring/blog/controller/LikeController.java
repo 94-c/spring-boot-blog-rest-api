@@ -7,6 +7,7 @@ import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,11 +18,10 @@ public class LikeController {
     private final LikeService likeService;
 
     @PostMapping()
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public SuccessResponse<LikeResponse> likePost(@PathVariable(name = "id") Long postId,
-                                                  UserPrincipal currentUser) {
+    public ResponseEntity<Like> likePost(@PathVariable(name = "id") Long postId,
+                                                 UserPrincipal currentUser) {
         Like like = likeService.updateLikeOfPost(postId, currentUser);
 
-        return SuccessResponse.success(LikeResponse.createLikeResponse(like));
+        return new ResponseEntity<>(like, HttpStatus.CREATED);
     }
 }

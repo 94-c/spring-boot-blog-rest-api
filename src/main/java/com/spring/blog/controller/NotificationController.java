@@ -3,7 +3,6 @@ package com.spring.blog.controller;
 import com.spring.blog.entity.Notification;
 import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
-import com.spring.blog.payload.SuccessResponse;
 import com.spring.blog.payload.request.NotificationRequestDto;
 import com.spring.blog.payload.response.NotificationResponse;
 import com.spring.blog.security.CurrentUser;
@@ -26,8 +25,7 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping
-    @ResponseStatus(value = HttpStatus.OK)
-    public SuccessResponse<NotificationResponse> getAllPosts(
+    public ResponseEntity<PageResponse<NotificationResponse>> getAllPosts(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
@@ -35,44 +33,40 @@ public class NotificationController {
 
         PageResponse<NotificationResponse> pageResponse = notificationService.findAllNotifications(pageNo, pageSize, sortBy, sortDir);
 
-        return SuccessResponse.success(pageResponse);
+        return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public SuccessResponse<NotificationResponse> createNotification(@Valid @RequestBody NotificationRequestDto dto,
-                                                                    @CurrentUser UserPrincipal currentUser) {
+    public ResponseEntity<NotificationResponse> createNotification(@Valid @RequestBody NotificationRequestDto dto,
+                                                                   @CurrentUser UserPrincipal currentUser) {
 
-        Notification createNotification = notificationService.createNotification(dto, currentUser);
+        NotificationResponse createNotification = notificationService.createNotification(dto, currentUser);
 
-        return SuccessResponse.success(NotificationResponse.createNotificationResponse(createNotification));
+        return new ResponseEntity<>(createNotification, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(value = HttpStatus.OK)
-    public SuccessResponse<NotificationResponse> findByNotification(@PathVariable(name = "id") Long notificationId) {
+    public ResponseEntity<Notification> findByNotification(@PathVariable(name = "id") Long notificationId) {
 
         Notification findByNotification = notificationService.findByNotification(notificationId);
 
-        return SuccessResponse.success(NotificationResponse.findNotificationResponse(findByNotification));
+        return new ResponseEntity<>(findByNotification, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public SuccessResponse<NotificationResponse> updateNotification(@PathVariable(name = "id") Long notificationId,
+    public ResponseEntity<Notification> updateNotification(@PathVariable(name = "id") Long notificationId,
                                                                     @Valid @RequestBody NotificationRequestDto dto,
                                                                     @CurrentUser UserPrincipal currentUser) {
 
         Notification updateNotification = notificationService.updateNotification(notificationId, dto, currentUser);
 
-        return SuccessResponse.success(NotificationResponse.updateNotificationResponse(updateNotification));
+        return new ResponseEntity<>(updateNotification, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<ApiResponse> deleteNotification(@PathVariable(name = "id") Long notificationId, @CurrentUser UserPrincipal currentUser) {
         ApiResponse apiResponse = notificationService.deleteNotification(notificationId, currentUser);
 

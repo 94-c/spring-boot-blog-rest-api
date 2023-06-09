@@ -11,7 +11,7 @@ public interface NotificationService {
 
     PageResponse<NotificationResponse> findAllNotifications(int pageNo, int pageSize, String sortBy, String sortDir);
 
-    Notification createNotification(NotificationRequestDto dto, UserPrincipal currentUser);
+    NotificationResponse createNotification(NotificationRequestDto dto, UserPrincipal currentUser);
 
     Notification findByNotification(Long notificationId);
 
