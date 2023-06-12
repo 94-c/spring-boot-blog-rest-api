@@ -70,7 +70,7 @@ public class PostServiceImpl implements PostService {
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException(CATEGORY, ID, dto.getCategoryId()));
 
-        List<Tag> tags = new ArrayList<>(dto.getTags().size());
+        /*List<Tag> tags = new ArrayList<>(dto.getTags().size());
 
         //게시글 등록 시, 태그 기능 등록
         for (String name : dto.getTags()) {
@@ -78,6 +78,22 @@ public class PostServiceImpl implements PostService {
             tag = tag == null ? tagRepository.save(new Tag(name)) : tag;
 
             tags.add(tag);
+        }*/
+
+        if (category != null) {
+            Post post = Post.builder()
+                    .title(dto.getTitle())
+                    .content(dto.getContent())
+                    .date(LocalDate.builder()
+                            .createdAt(LocalDateTime.now())
+                            .build())
+                    .userId(currentUser.getId())
+                    .category(category)
+                    //.tags(tags)
+                    .build();
+
+            Post createPost = postRepository.save(post);
+            return PostResponse.createPostResponse(createPost);
         }
 
         Post post = Post.builder()
@@ -87,12 +103,10 @@ public class PostServiceImpl implements PostService {
                         .createdAt(LocalDateTime.now())
                         .build())
                 .userId(currentUser.getId())
-                .category(category)
-                .tags(tags)
+                //.tags(tags)
                 .build();
 
         Post createPost = postRepository.save(post);
-
         return PostResponse.createPostResponse(createPost);
     }
 

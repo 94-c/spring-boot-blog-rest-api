@@ -40,7 +40,7 @@ public class CategoryResponse {
                 .name(category.getName())
                 .createdAt(category.getDate().getCreatedAt())
                 .updatedAt(category.getDate().getUpdateAt())
-                .posts(PostResponse.convertToPostResponseList(category.getPosts()))
+                //.posts(PostResponse.convertToPostResponseList(category.getPosts()))
                 .build();
     }
 }

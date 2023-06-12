@@ -11,7 +11,6 @@ import java.util.List;
 @Builder
 @Data
 public class PostRequestDto {
-
     @NotBlank(message = "제목을 입력해주세요.")
     private String title;
     @NotBlank(message = "본문을 입력해주세요.")

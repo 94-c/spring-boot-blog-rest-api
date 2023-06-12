@@ -72,7 +72,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category createCategory = categoryRepository.save(category);
 
-        return CategoryResponse.convertToCategoryResponse(category);
+        return CategoryResponse.convertToCategoryResponse(createCategory);
     }
 
 
