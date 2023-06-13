@@ -42,11 +42,14 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
     private List<Tag> tags;
 
-    @Column(nullable = true)
+    @Column(name = "attachment_id", nullable = true)
     private Long attachmentId;
 
     @Column(nullable = true)
     private Integer liked; // 좋아요 수
+
+    @Column(name = "is_enable")
+    private Integer isEnable;
 
     public void increaseLikeCount() {
         this.liked += 1;

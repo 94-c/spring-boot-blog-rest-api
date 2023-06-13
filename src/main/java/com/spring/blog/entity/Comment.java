@@ -33,8 +33,8 @@ public class Comment {
     @Embedded
     private LocalDate date;
 
-    @Column(name = "is_enable", columnDefinition = "1")
-    private Long isEnable;
+    @Column(name = "is_enable")
+    private Integer isEnable;
 
 }
 

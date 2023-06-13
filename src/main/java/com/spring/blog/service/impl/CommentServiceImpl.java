@@ -74,7 +74,7 @@ public class CommentServiceImpl implements CommentService {
                         .createdAt(LocalDateTime.now())
                         .build())
                 .userId(currentUser.getId())
-                .isEnable(1L)
+                .isEnable(1)
                 .post(findByPost)
                 .build();
 
@@ -134,7 +134,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment isEnable(Long postId, Long commentId, UserPrincipal currentUser) {
-        Post findByPost = postRepository.findById(postId)
+       postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException(POST, ID, postId));
 
         Comment findByComment = commentRepository.findById(commentId)
@@ -143,7 +143,7 @@ public class CommentServiceImpl implements CommentService {
         if (findByComment.getUserId().equals(currentUser.getId())
                 || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
 
-            findByComment.setIsEnable(1L);
+            findByComment.setIsEnable(1);
 
             return commentRepository.save(findByComment);
         }
@@ -155,7 +155,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment isUnable(Long postId, Long commentId, UserPrincipal currentUser) {
-        Post findByPost = postRepository.findById(postId)
+        postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException(POST, ID, postId));
 
         Comment findByComment = commentRepository.findById(commentId)
@@ -164,7 +164,7 @@ public class CommentServiceImpl implements CommentService {
         if (findByComment.getUserId().equals(currentUser.getId())
                 || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
 
-            findByComment.setIsEnable(0L);
+            findByComment.setIsEnable(0);
 
             return commentRepository.save(findByComment);
         }

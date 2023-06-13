@@ -57,8 +57,10 @@ public class AuthController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
 
-
-        return SuccessResponse.successResponseEntity(UserResponse.loginResponse(authentication, token), httpHeaders);
+        return SuccessResponse.successResponseEntity(UserResponse.builder()
+                .email(authentication.getName())
+                .token(token)
+                .build(), httpHeaders);
     }
 
     @GetMapping("/logout")
