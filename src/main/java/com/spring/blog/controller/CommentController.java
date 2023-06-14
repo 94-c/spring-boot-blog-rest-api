@@ -38,7 +38,7 @@ public class CommentController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    //@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<CommentResponse> createComment(@PathVariable(name = "postId") Long postId,
                                                           @Valid @RequestBody CommentRequestDto dto,
                                                           @CurrentUser UserPrincipal currentUser) {
@@ -57,7 +57,7 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseStatus(value = HttpStatus.OK)
     public SuccessResponse<CommentResponse> updateComment(@PathVariable(name = "postId") Long postId,
                                                           @PathVariable(name = "id") Long id,
@@ -70,7 +70,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<ApiResponse> deleteComment(@PathVariable(name = "postId") Long postId,
                                                      @PathVariable(name = "id") Long id,

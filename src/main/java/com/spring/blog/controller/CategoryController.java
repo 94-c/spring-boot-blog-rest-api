@@ -38,7 +38,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('USER')")
+    //@PreAuthorize("hasRole('USER')")
     public ResponseEntity<CategoryResponse> createCategories(@Valid @RequestBody CategoryRequestDto dto,
                                                      @CurrentUser UserPrincipal currentUser) {
         CategoryResponse createCategory = categoryService.createCategory(dto, currentUser);
@@ -55,7 +55,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Category> updateCategory(@PathVariable(name = "id") Long id,
                                                             @Valid @RequestBody CategoryRequestDto dto,
                                                             @CurrentUser UserPrincipal currentUser) throws UnauthorizedException {
@@ -65,7 +65,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> deleteCategory(@PathVariable(name = "id") Long id,
                                                        @CurrentUser UserPrincipal currentUser) throws UnauthorizedException {
         ApiResponse apiResponse = categoryService.deleteCategory(id, currentUser);

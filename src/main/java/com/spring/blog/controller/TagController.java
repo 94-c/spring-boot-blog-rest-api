@@ -21,10 +21,10 @@ import javax.validation.Valid;
 @RequestMapping("/api/tags")
 @RequiredArgsConstructor
 public class TagController {
-    private TagService tagService;
+    private final TagService tagService;
 
     @PostMapping
-    @PreAuthorize("hasRole('USER')")
+    //@PreAuthorize("hasRole('USER')")
     public ResponseEntity<TagResponse> addTag(@Valid @RequestBody TagRequestDto dto,
                                               @CurrentUser UserPrincipal currentUser) {
         TagResponse newTag = tagService.createTag(dto, currentUser);
@@ -40,7 +40,7 @@ public class TagController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Tag> updateTag(@PathVariable(name = "id") Long id,
                                          @Valid @RequestBody TagRequestDto dto,
                                          @CurrentUser UserPrincipal currentUser) {
@@ -51,7 +51,7 @@ public class TagController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> deleteTag(@PathVariable(name = "id") Long id,
                                                  @CurrentUser UserPrincipal currentUser) {
         ApiResponse apiResponse = tagService.deleteTag(id, currentUser);

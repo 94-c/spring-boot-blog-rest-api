@@ -38,7 +38,7 @@ public class PostController {
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
     @PostMapping
-    @PreAuthorize("hasRole('USER')")
+    //@PreAuthorize("hasRole('USER')")
     public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostRequestDto dto,
                                                     @CurrentUser UserPrincipal currentUser) {
 
@@ -56,8 +56,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    @ResponseStatus(value = HttpStatus.OK)
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Post> updatePost(@PathVariable(name = "id") Long postId,
                                                     @Valid @RequestBody PostRequestDto dto,
                                                     @CurrentUser UserPrincipal currentUser) {
@@ -67,8 +66,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    @ResponseStatus(value = HttpStatus.OK)
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> deletePost(@PathVariable(name = "id") Long postId, @CurrentUser UserPrincipal currentUser) {
         ApiResponse apiResponse = postService.deletePost(postId, currentUser);
 

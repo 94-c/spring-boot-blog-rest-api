@@ -37,7 +37,7 @@ public class NotificationController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<NotificationResponse> createNotification(@Valid @RequestBody NotificationRequestDto dto,
                                                                    @CurrentUser UserPrincipal currentUser) {
 
@@ -55,7 +55,7 @@ public class NotificationController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Notification> updateNotification(@PathVariable(name = "id") Long notificationId,
                                                                     @Valid @RequestBody NotificationRequestDto dto,
                                                                     @CurrentUser UserPrincipal currentUser) {
@@ -66,7 +66,7 @@ public class NotificationController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> deleteNotification(@PathVariable(name = "id") Long notificationId, @CurrentUser UserPrincipal currentUser) {
         ApiResponse apiResponse = notificationService.deleteNotification(notificationId, currentUser);
 
