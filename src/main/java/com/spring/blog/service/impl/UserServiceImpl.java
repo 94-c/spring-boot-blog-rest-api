@@ -8,6 +8,7 @@ import com.spring.blog.exception.AppException;
 import com.spring.blog.exception.BadRequestException;
 import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.request.JoinUserRequestDto;
+import com.spring.blog.payload.request.LoginRequestDto;
 import com.spring.blog.repository.RoleRepository;
 import com.spring.blog.repository.UserRepository;
 import com.spring.blog.service.CertificationService;
@@ -19,13 +20,13 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
     private final RoleRepository roleRepository;
     private final CertificationService certificationService;
 
@@ -61,5 +62,17 @@ public class UserServiceImpl implements UserService {
 
         return joinUser;
     }
+
+    @Override
+    public boolean longinUser(LoginRequestDto dto) {
+        Optional<User> findByEmail = userRepository.findByEmail(dto.getEmail());
+
+        if (findByEmail.isPresent()) {
+            User user = findByEmail.get();
+            return user.getPassword().equals(dto.getPassword()); // 로그인 성공
+        }
+        return false; // 로그인 실패
+    }
+
 
 }

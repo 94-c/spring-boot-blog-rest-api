@@ -42,6 +42,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<SuccessResponse<UserResponse>> login(@Valid @RequestBody LoginRequestDto loginDto, HttpServletResponse response) {
 
+        userService.longinUser(loginDto);
+
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
