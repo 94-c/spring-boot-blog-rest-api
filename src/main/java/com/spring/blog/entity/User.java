@@ -43,6 +43,8 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Notification> notifications = new ArrayList<>();
 
+    private Integer status;
+
     public List<Role> getRoles() {
 
         return roles == null ? null : new ArrayList<>(roles);

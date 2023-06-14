@@ -49,6 +49,7 @@ public class UserServiceImpl implements UserService {
                 .date(LocalDate.builder()
                         .createdAt(LocalDateTime.now())
                         .build())
+                .status(0)
                 .build();
 
         user.setRoles(roles);
