@@ -48,7 +48,6 @@ public class UserServiceImpl implements UserService {
                 .email(dto.getEmail())
                 .name(dto.getName())
                 .date(LocalDate.builder()
-
                         .createdAt(LocalDateTime.now())
                         .build())
                 .status(0)
