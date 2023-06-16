@@ -25,6 +25,9 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    /**
+     * 댓글 전체 조회
+     */
     @GetMapping
     public ResponseEntity<PageResponse<CommentResponse>> getAllPosts(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
@@ -37,6 +40,9 @@ public class CommentController {
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
+    /**
+     * 댓글 등록
+     */
     @PostMapping
     //@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<CommentResponse> createComment(@PathVariable(name = "postId") Long postId,
@@ -48,6 +54,9 @@ public class CommentController {
         return new ResponseEntity<>(createComment, HttpStatus.CREATED);
     }
 
+    /**
+     * 댓글 상세보기
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Comment> findByComment(@PathVariable(name = "postId") Long postId,
                                                           @PathVariable(name = "id") Long id) {
@@ -56,22 +65,26 @@ public class CommentController {
         return new ResponseEntity<>(findByComment, HttpStatus.OK);
     }
 
+    /**
+     * 댓글 수정
+     */
     @PutMapping("/{id}")
     //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    @ResponseStatus(value = HttpStatus.OK)
-    public SuccessResponse<CommentResponse> updateComment(@PathVariable(name = "postId") Long postId,
+    public ResponseEntity<Comment> updateComment(@PathVariable(name = "postId") Long postId,
                                                           @PathVariable(name = "id") Long id,
                                                           @Valid @RequestBody CommentRequestDto dto,
                                                           @CurrentUser UserPrincipal currentUser) {
 
         Comment updateComment = commentService.updateComment(postId, id, dto, currentUser);
 
-        return SuccessResponse.success(CommentResponse.updateCommentResponse(updateComment));
+        return new ResponseEntity<>(updateComment, HttpStatus.OK);
     }
 
+    /**
+     * 댓글 삭제
+     */
     @DeleteMapping("/{id}")
     //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<ApiResponse> deleteComment(@PathVariable(name = "postId") Long postId,
                                                      @PathVariable(name = "id") Long id,
                                                      @CurrentUser UserPrincipal currentUser) {
@@ -81,27 +94,25 @@ public class CommentController {
     }
 
     @PutMapping("/{id}/enable")
-    @PreAuthorize("hasRole('ADMIN')")
-    @ResponseStatus(value = HttpStatus.OK)
-    public SuccessResponse<CommentResponse> enableComment(@PathVariable(name = "postId") Long postId,
+    //@PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Comment> enableComment(@PathVariable(name = "postId") Long postId,
                                                           @PathVariable(name = "id") Long id,
                                                           @CurrentUser UserPrincipal currentUser) {
 
         Comment isEnableComment = commentService.isEnable(postId, id, currentUser);
 
-        return SuccessResponse.success(CommentResponse.isEnableCommentResponse(isEnableComment));
+        return new ResponseEntity<>(isEnableComment, HttpStatus.OK);
     }
 
     @PutMapping("/{id}/unable")
-    @PreAuthorize("hasRole('ADMIN')")
-    @ResponseStatus(value = HttpStatus.OK)
-    public SuccessResponse<CommentResponse> unableComment(@PathVariable(name = "postId") Long postId,
+    //@PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Comment> unableComment(@PathVariable(name = "postId") Long postId,
                                                           @PathVariable(name = "id") Long id,
                                                           @CurrentUser UserPrincipal currentUser) {
 
         Comment isUnableComment = commentService.isUnable(postId, id, currentUser);
 
-        return SuccessResponse.success(CommentResponse.isEnableCommentResponse(isUnableComment));
+        return new ResponseEntity<>(isUnableComment, HttpStatus.OK);
     }
 
 }
