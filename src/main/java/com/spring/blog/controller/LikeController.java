@@ -18,8 +18,8 @@ public class LikeController {
     private final LikeService likeService;
 
     @PostMapping()
-    public ResponseEntity<Like> likePost(@PathVariable(name = "id") Long postId,
-                                                 UserPrincipal currentUser) {
+    public ResponseEntity<Like> likePost(@PathVariable(name = "postId") Long postId,
+                                         UserPrincipal currentUser) {
         Like like = likeService.updateLikeOfPost(postId, currentUser);
 
         return new ResponseEntity<>(like, HttpStatus.CREATED);
