@@ -28,9 +28,11 @@ public class AuthController {
 
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
-
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
+    /**
+     * 사용자 회원가입
+     */
     @PostMapping("/join")
     public ResponseEntity<User> joinUser(@Valid @RequestBody JoinUserRequestDto dto) {
 
@@ -39,6 +41,9 @@ public class AuthController {
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
+    /**
+     * 로그인
+     */
     @PostMapping("/login")
     public ResponseEntity<SuccessResponse<UserResponse>> login(@Valid @RequestBody LoginRequestDto loginDto, HttpServletResponse response) {
 
@@ -65,6 +70,9 @@ public class AuthController {
                 .build(), httpHeaders);
     }
 
+    /**
+     * 로그아웃
+     */
     @GetMapping("/logout")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<SuccessResponse<String>> logout() {
