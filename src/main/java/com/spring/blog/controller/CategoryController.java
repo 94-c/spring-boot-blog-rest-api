@@ -25,6 +25,9 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    /**
+     * 카테고리 전체 조회
+     */
     @GetMapping
     public ResponseEntity<PageResponse<CategoryResponse>> getAllCategories(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
@@ -37,6 +40,9 @@ public class CategoryController {
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
+    /**
+     * 카테고리 등록
+     */
     @PostMapping
     //@PreAuthorize("hasRole('USER')")
     public ResponseEntity<CategoryResponse> createCategories(@Valid @RequestBody CategoryRequestDto dto,
@@ -46,6 +52,9 @@ public class CategoryController {
         return new ResponseEntity<>(createCategory, HttpStatus.CREATED);
     }
 
+    /**
+     * 카테고리 상세보기
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Category> getCategory(@PathVariable(name = "id") Long id) {
 
@@ -54,6 +63,9 @@ public class CategoryController {
         return new ResponseEntity<>(findByCategory, HttpStatus.OK);
     }
 
+    /**
+     * 카테고리 수정
+     */
     @PutMapping("/{id}")
     //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Category> updateCategory(@PathVariable(name = "id") Long id,
@@ -64,6 +76,9 @@ public class CategoryController {
         return new ResponseEntity<>(updateCategory, HttpStatus.OK);
     }
 
+    /**
+     * 카테고리 삭제
+     */
     @DeleteMapping("/{id}")
     //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> deleteCategory(@PathVariable(name = "id") Long id,
