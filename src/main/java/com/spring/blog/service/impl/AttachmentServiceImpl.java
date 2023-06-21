@@ -39,8 +39,8 @@ public class AttachmentServiceImpl implements AttachmentService {
     public String storeFile(MultipartFile file) {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
-        try{
-            if(fileName.contains("..")) {
+        try {
+            if (fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
 
@@ -48,23 +48,23 @@ public class AttachmentServiceImpl implements AttachmentService {
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             return fileName;
-        }catch(IOException ex){
+        } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }
     }
 
     @Override
     public Resource loadFileAsResource(String fileName) {
-        try{
+        try {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
-            if(resource.exists()){
+            if (resource.exists()) {
                 return resource;
-            }else{
+            } else {
                 throw new MyFileNotFoundException("File not found" + fileName);
             }
-        }catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             throw new MyFileNotFoundException("File not found " + fileName, ex);
         }
     }
