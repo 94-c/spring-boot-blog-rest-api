@@ -21,6 +21,9 @@ public class Attachment {
     private String originFileName;
     @Column(name = "full_path", nullable = false)
     private String fullPath;
+    @Column(name = "file_size")
+    private Long fileSize;
+
     @Embedded
     private LocalDate date;
 
