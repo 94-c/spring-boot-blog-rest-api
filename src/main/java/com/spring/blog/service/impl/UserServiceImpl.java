@@ -47,14 +47,13 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .email(dto.getEmail())
                 .name(dto.getName())
+                .password(BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt()))
                 .date(LocalDate.builder()
                         .createdAt(LocalDateTime.now())
                         .build())
                 .status(0)
+                .roles(roles)
                 .build();
-
-        user.setRoles(roles);
-        user.setPassword(BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt()));
 
         User joinUser = userRepository.save(user);
 

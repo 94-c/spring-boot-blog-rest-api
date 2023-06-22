@@ -46,22 +46,7 @@ public class User {
     private Integer status;
 
     public List<Role> getRoles() {
-
         return roles == null ? null : new ArrayList<>(roles);
     }
-
-    public void setRoles(List<Role> roles) {
-
-        if (roles == null) {
-            this.roles = null;
-        } else {
-            this.roles = Collections.unmodifiableList(roles);
-        }
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
 
 }
