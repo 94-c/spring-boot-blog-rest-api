@@ -1,13 +1,16 @@
 package com.spring.blog.controller;
 
+import com.spring.blog.entity.Attachment;
 import com.spring.blog.entity.Post;
 import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
 import com.spring.blog.payload.SuccessResponse;
+import com.spring.blog.payload.response.AttachmentResponse;
 import com.spring.blog.payload.response.PostResponse;
 import com.spring.blog.payload.request.PostRequestDto;
 import com.spring.blog.security.CurrentUser;
 import com.spring.blog.security.UserPrincipal;
+import com.spring.blog.service.AttachmentService;
 import com.spring.blog.service.PostService;
 import com.spring.blog.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -24,6 +28,7 @@ import javax.validation.Valid;
 public class PostController {
 
     private final PostService postService;
+    private final AttachmentService attachmentService;
 
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
@@ -37,10 +42,11 @@ public class PostController {
 
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
+
     @PostMapping
     //@PreAuthorize("hasRole('USER')")
     public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostRequestDto dto,
-                                                    @CurrentUser UserPrincipal currentUser) {
+                                                   @CurrentUser UserPrincipal currentUser) {
 
         PostResponse createPost = postService.createPost(dto, currentUser);
 
@@ -58,8 +64,8 @@ public class PostController {
     @PutMapping("/{id}")
     //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Post> updatePost(@PathVariable(name = "id") Long postId,
-                                                    @Valid @RequestBody PostRequestDto dto,
-                                                    @CurrentUser UserPrincipal currentUser) {
+                                           @Valid @RequestBody PostRequestDto dto,
+                                           @CurrentUser UserPrincipal currentUser) {
         Post updatePost = postService.updatePost(postId, dto, currentUser);
 
         return new ResponseEntity<>(updatePost, HttpStatus.OK);
@@ -73,5 +79,13 @@ public class PostController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping("/{id}/uploadFile")
+    public ResponseEntity<Attachment> uploadFile(@PathVariable(name = "id") Long id,
+                                         @RequestParam("file") MultipartFile file) {
+        Attachment createAttachment = attachmentService.createAttachment(file, id);
+
+        return new ResponseEntity<>(createAttachment, HttpStatus.OK);
+    }
 
 }

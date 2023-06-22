@@ -12,7 +12,6 @@ public interface CategoryService {
 
     PageResponse<CategoryResponse> findByAllCategories(int pageNo, int pageSize, String sortBy, String sortDir);
     CategoryResponse createCategory(CategoryRequestDto dto, UserPrincipal currentUser);
-
     Category findByCategory(Long categoryId);
 
     Category updateCategory(Long categoryId, CategoryRequestDto dto, UserPrincipal currentUser) throws UnauthorizedException;

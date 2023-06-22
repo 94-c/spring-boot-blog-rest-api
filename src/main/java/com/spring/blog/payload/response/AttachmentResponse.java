@@ -9,11 +9,9 @@ import java.time.LocalDateTime;
 @Builder
 @Data
 public class AttachmentResponse {
-
-    private String originFileName;
-    private String fullPath;
-    private Long fileSize;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private String fileName;
+    private String fileDownloadUri;
+    private String fileType;
+    private long size;
 
 }

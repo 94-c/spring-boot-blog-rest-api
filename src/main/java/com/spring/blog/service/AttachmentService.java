@@ -1,5 +1,7 @@
 package com.spring.blog.service;
 
+import com.spring.blog.entity.Attachment;
+import com.spring.blog.payload.request.AttachmentRequestDto;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,4 +11,5 @@ public interface AttachmentService {
 
     Resource loadFileAsResource(String fileName);
 
+    Attachment createAttachment(MultipartFile file, Long PostId);
 }

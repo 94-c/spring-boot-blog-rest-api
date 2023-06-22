@@ -6,8 +6,9 @@ import lombok.Data;
 @Builder
 @Data
 public class AttachmentRequestDto {
+    private String fileName;
+    private String fileDownloadUri;
+    private String fileType;
+    private Long size;
 
-    private Long id;
-    private String originFileName;
-    private String fullPath;
 }

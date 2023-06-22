@@ -17,12 +17,18 @@ public class Attachment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "origin_file_name", nullable = false)
-    private String originFileName;
-    @Column(name = "full_path", nullable = false)
-    private String fullPath;
-    @Column(name = "file_size")
-    private Long fileSize;
+    @Column(name = "file_name")
+    private String fileName;
+
+    @Column(name = "file_download_uri")
+    private String fileDownloadUri;
+
+    @Column(name = "file_type")
+    private String fileType;
+    @Column
+    private Long size;
+
+    private Long postId;
 
     @Embedded
     private LocalDate date;
