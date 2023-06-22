@@ -82,8 +82,10 @@ public class PostController {
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping("/{id}/uploadFile")
     public ResponseEntity<Attachment> uploadFile(@PathVariable(name = "id") Long id,
-                                         @RequestParam("file") MultipartFile file) {
-        Attachment createAttachment = attachmentService.createAttachment(file, id);
+                                                 @RequestParam("file") MultipartFile file,
+                                                 @CurrentUser UserPrincipal currentUser) {
+
+        Attachment createAttachment = attachmentService.createAttachment(file, id, currentUser);
 
         return new ResponseEntity<>(createAttachment, HttpStatus.OK);
     }

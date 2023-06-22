@@ -28,7 +28,11 @@ public class Attachment {
     @Column
     private Long size;
 
+    @Column(name = "post_id")
     private Long postId;
+
+    @Column(name = "user_id")
+    private Long userId;
 
     @Embedded
     private LocalDate date;

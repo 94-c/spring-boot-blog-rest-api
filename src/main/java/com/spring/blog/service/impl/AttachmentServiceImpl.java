@@ -8,6 +8,7 @@ import com.spring.blog.exception.MyFileNotFoundException;
 import com.spring.blog.payload.request.AttachmentRequestDto;
 import com.spring.blog.repository.AttachmentRepository;
 import com.spring.blog.repository.PostRepository;
+import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.AttachmentService;
 import com.spring.blog.utils.AttachmentUtil;
 import lombok.RequiredArgsConstructor;
@@ -90,7 +91,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public Attachment createAttachment(MultipartFile file, Long postId) {
+    public Attachment createAttachment(MultipartFile file, Long postId, UserPrincipal currentUser) {
         String fileName = this.storeFile(file);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -107,6 +108,7 @@ public class AttachmentServiceImpl implements AttachmentService {
                 .fileType(file.getContentType())
                 .size(file.getSize())
                 .postId(findByPost.get().getId())
+                .userId(currentUser.getId())
                 .date(LocalDate.builder()
                         .createdAt(LocalDateTime.now())
                         .build())

@@ -10,5 +10,7 @@ public class AttachmentRequestDto {
     private String fileDownloadUri;
     private String fileType;
     private Long size;
+    private Long postId;
+    private Long userId;
 
 }
