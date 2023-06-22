@@ -20,7 +20,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -91,7 +95,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public Attachment createAttachment(MultipartFile file, Long postId, UserPrincipal currentUser) {
+    public Attachment uploadAttachment(MultipartFile file, Long postId, UserPrincipal currentUser) {
         String fileName = this.storeFile(file);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -116,6 +120,5 @@ public class AttachmentServiceImpl implements AttachmentService {
 
         return attachmentRepository.save(attachment);
     }
-
 
 }

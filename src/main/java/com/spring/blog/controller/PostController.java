@@ -14,13 +14,22 @@ import com.spring.blog.service.AttachmentService;
 import com.spring.blog.service.PostService;
 import com.spring.blog.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -85,9 +94,52 @@ public class PostController {
                                                  @RequestParam("file") MultipartFile file,
                                                  @CurrentUser UserPrincipal currentUser) {
 
-        Attachment createAttachment = attachmentService.createAttachment(file, id, currentUser);
+        Attachment createAttachment = attachmentService.uploadAttachment(file, id, currentUser);
 
         return new ResponseEntity<>(createAttachment, HttpStatus.OK);
     }
 
+    /*
+        TODO 파일 다운로드 전체 수정 해야함,
+     */
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping("/downloadFile/{fileName:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable("fileName") String fileName,
+                                                 HttpServletRequest request,
+                                                 HttpServletResponse response) {
+
+        Resource resource = attachmentService.loadFileAsResource(fileName);
+
+        String contentType = null;
+
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getCanonicalPath());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        try {
+            File file = resource.getFile();
+
+            response.setContentType(contentType);
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+
+            OutputStream outputStream = response.getOutputStream();
+            Files.copy(file.toPath(), outputStream);
+
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
 }
