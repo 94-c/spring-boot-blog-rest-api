@@ -45,9 +45,11 @@ public class PostController {
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIREACTION, required = false) String sortDir) {
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIREACTION, required = false) String sortDir,
+            @RequestParam(value = "title") String title,
+            @RequestParam(value = "content") String content) {
 
-        PageResponse<PostResponse> pageResponse = postService.findAllPosts(pageNo, pageSize, sortBy, sortDir);
+        PageResponse<PostResponse> pageResponse = postService.findAllPosts(pageNo, pageSize, sortBy, sortDir, title, content);
 
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
@@ -88,15 +90,13 @@ public class PostController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
-    @PostMapping("/{id}/uploadFile")
-    public ResponseEntity<Attachment> uploadFile(@PathVariable(name = "id") Long id,
-                                                 @RequestParam("file") MultipartFile file,
-                                                 @CurrentUser UserPrincipal currentUser) {
+    @PostMapping("/{id}/enable")
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Post> enablePost(@PathVariable(name = "id") Long postId,
+                                           @CurrentUser UserPrincipal currentUser) {
+        Post enablePost = postService.isEnable(postId, currentUser);
 
-        Attachment createAttachment = attachmentService.uploadAttachment(file, id, currentUser);
-
-        return new ResponseEntity<>(createAttachment, HttpStatus.OK);
+        return new ResponseEntity<>(enablePost, HttpStatus.OK);
     }
 
     /*

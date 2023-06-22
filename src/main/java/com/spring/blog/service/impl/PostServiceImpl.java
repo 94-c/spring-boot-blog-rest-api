@@ -41,21 +41,21 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<PostResponse> findAllPosts(int pageNo, int pageSize, String sortBy, String sortDir) {
+    public PageResponse<PostResponse> findAllPosts(int pageNo, int pageSize, String sortBy, String sortDir, String title, String content) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        Page<Post> posts = postRepository.findAll(pageable);
+        Page<Post> posts = postRepository.findAllSearch(title, content, pageable);
 
         List<Post> listOfPosts = posts.getContent();
 
-        List<PostResponse> content = listOfPosts.stream().map(PostResponse::convertToPostResponse).collect(Collectors.toList());
+        List<PostResponse> postResponses = listOfPosts.stream().map(PostResponse::convertToPostResponse).collect(Collectors.toList());
 
         PageResponse<PostResponse> pageResource = new PageResponse<>();
 
-        pageResource.setContent(content);
+        pageResource.setContent(postResponses);
         pageResource.setPageNo(pageNo);
         pageResource.setPageSize(pageSize);
         pageResource.setTotalElements(posts.getTotalElements());
@@ -90,6 +90,7 @@ public class PostServiceImpl implements PostService {
                     .userId(currentUser.getId())
                     .category(category)
                     //.tags(tags)
+                    .isEnable(0)
                     .build();
 
             Post createPost = postRepository.save(post);
@@ -104,6 +105,7 @@ public class PostServiceImpl implements PostService {
                         .build())
                 .userId(currentUser.getId())
                 //.tags(tags)
+                .isEnable(0)
                 .build();
 
         Post createPost = postRepository.save(post);
@@ -145,9 +147,48 @@ public class PostServiceImpl implements PostService {
 
         if (findByPost.getUserId().equals(currentUser.getId())
                 || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
+
             postRepository.deleteById(postId);
 
             return new ApiResponse(Boolean.TRUE, "게시물이 삭제 되었습니다.");
+        }
+
+        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "권한이 없습니다.");
+
+        throw new UnauthorizedException(apiResponse);
+    }
+
+    @Override
+    public Post isEnable(Long postId,UserPrincipal currentUser) {
+        Post findByPost = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException(POST, ID, postId));
+
+        if (findByPost.getUserId().equals(currentUser.getId())
+                || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
+            findByPost.setIsEnable(0);
+            findByPost.setDate(LocalDate.builder()
+                    .updateAt(LocalDateTime.now())
+                    .build());
+            return postRepository.save(findByPost);
+        }
+
+        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "권한이 없습니다.");
+
+        throw new UnauthorizedException(apiResponse);
+    }
+
+    @Override
+    public Post isUnable(Long postId, UserPrincipal currentUser) {
+        Post findByPost = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException(POST, ID, postId));
+
+        if (findByPost.getUserId().equals(currentUser.getId())
+                || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
+            findByPost.setIsEnable(1);
+            findByPost.setDate(LocalDate.builder()
+                    .updateAt(LocalDateTime.now())
+                    .build());
+            return postRepository.save(findByPost);
         }
 
         ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "권한이 없습니다.");

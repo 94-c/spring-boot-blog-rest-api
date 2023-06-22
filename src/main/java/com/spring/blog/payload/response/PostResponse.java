@@ -23,15 +23,6 @@ public class PostResponse {
     private List<CommentResponse> comments;
     private List<String> tags;
 
-    public void setTags(List<String> tags) {
-
-        if (tags == null) {
-            this.tags = null;
-        } else {
-            this.tags = Collections.unmodifiableList(tags);
-        }
-    }
-
     public static PostResponse createPostResponse(Post post) {
         return PostResponse.builder()
                 .id(post.getId())

@@ -9,13 +9,12 @@ import com.spring.blog.security.UserPrincipal;
 
 public interface PostService {
 
-    PageResponse<PostResponse> findAllPosts(int pageNo, int pageSize, String sortBy, String sortDir);
-
+    PageResponse<PostResponse> findAllPosts(int pageNo, int pageSize, String sortBy, String sortDir, String title, String content);
     PostResponse createPost(PostRequestDto dto, UserPrincipal currentUser);
-
     Post findByPost(Long postId);
-
     Post updatePost(Long postId, PostRequestDto dto, UserPrincipal currentUser);
-
     ApiResponse deletePost(Long id, UserPrincipal currentUser);
+    Post isEnable(Long postId, UserPrincipal currentUser);
+    Post isUnable(Long postId, UserPrincipal currentUser);
+
 }
