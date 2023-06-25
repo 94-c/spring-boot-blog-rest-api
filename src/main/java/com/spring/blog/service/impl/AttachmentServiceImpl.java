@@ -23,10 +23,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import javax.transaction.Transactional;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -82,19 +80,28 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public Resource loadFileAsResource(String fileName) {
+    public Resource loadFileAsResource(String fileName) throws FileNotFoundException {
         try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
+            Path file = this.fileStorageLocation.resolve(fileName).normalize();
+            Resource resource = new UrlResource(file.toUri());
 
-            if (resource.exists()) {
+            if(resource.exists() || resource.isReadable()) {
                 return resource;
-            } else {
-                throw new MyFileNotFoundException("File not found" + fileName);
+            }else {
+                throw new FileNotFoundException("Could not find file");
             }
-        } catch (MalformedURLException ex) {
-            throw new MyFileNotFoundException("File not found " + fileName, ex);
+        } catch (MalformedURLException e) {
+            throw new FileNotFoundException("Could not download file");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
+
+    }
+
+    @Override
+    @Transactional
+    public Attachment findByAttachment(Long id) {
+        return attachmentRepository.findById(id).get();
     }
 
     @Override
@@ -119,6 +126,7 @@ public class AttachmentServiceImpl implements AttachmentService {
             Post post = optionalPost.orElseThrow(() -> new IllegalArgumentException("Post not found"));
 
             Attachment attachment = Attachment.builder()
+                    .originFileName(origFilename)
                     .fileName(filename)
                     .fileDownloadUri(savePath)
                     .fileType(file.getContentType())
