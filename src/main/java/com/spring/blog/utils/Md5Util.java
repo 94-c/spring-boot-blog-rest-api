@@ -5,7 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Md5Util {
-    private String result;
+    private final String result;
     public Md5Util(String input) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         MessageDigest mdMD5 = MessageDigest.getInstance("MD5");
         mdMD5.update(input.getBytes("UTF-8"));
