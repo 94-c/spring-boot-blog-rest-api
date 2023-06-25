@@ -19,7 +19,7 @@ public class Md5Util {
     }
 
     public String toString() {
-
+        return result;
     }
 
 }
