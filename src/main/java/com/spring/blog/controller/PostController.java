@@ -99,6 +99,16 @@ public class PostController {
         return new ResponseEntity<>(enablePost, HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping("/{id}/uploadFile")
+    public ResponseEntity<Attachment> uploadFile(@PathVariable(name = "id") Long id,
+                                                 @RequestParam("file") MultipartFile file,
+                                                 @CurrentUser UserPrincipal currentUser) {
+        Attachment createAttachment = attachmentService.uploadAttachment(file, id, currentUser);
+
+        return new ResponseEntity<>(createAttachment, HttpStatus.OK);
+    }
+
     /*
         TODO 파일 다운로드 전체 수정 해야함,
      */

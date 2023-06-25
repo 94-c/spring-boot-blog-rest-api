@@ -18,7 +18,6 @@ public class PostRequestDto {
     private Long userId;
     @NotNull
     private Long categoryId;
-    private Long attachmentId;
     private List<String> tags;
 
 }
