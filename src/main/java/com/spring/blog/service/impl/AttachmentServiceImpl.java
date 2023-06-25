@@ -11,6 +11,7 @@ import com.spring.blog.repository.PostRepository;
 import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.AttachmentService;
 import com.spring.blog.utils.AttachmentUtil;
+import com.spring.blog.utils.Md5Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -25,11 +26,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -96,29 +99,42 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public Attachment uploadAttachment(MultipartFile file, Long postId, UserPrincipal currentUser) {
-        String fileName = this.storeFile(file);
+        try {
+            String origFilename = file.getOriginalFilename();
+            String filename = new Md5Util(origFilename).toString();
 
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/post")
-                .path("/downloadFile/")
-                .path(fileName)
-                .toUriString();
+            String savePath = System.getProperty("user.dir") + File.separator + "files";
+            File saveFolder = new File(savePath);
 
-        Optional<Post> findByPost = postRepository.findById(postId);
+            if (!saveFolder.exists()) {
+                if (!saveFolder.mkdir()) {
+                    throw new RuntimeException("Failed to create directory: " + savePath);
+                }
+            }
 
-        Attachment attachment = Attachment.builder()
-                .fileName(fileName)
-                .fileDownloadUri(fileDownloadUri)
-                .fileType(file.getContentType())
-                .size(file.getSize())
-                .postId(findByPost.get().getId())
-                .userId(currentUser.getId())
-                .date(LocalDate.builder()
-                        .createdAt(LocalDateTime.now())
-                        .build())
-                .build();
+            String filePath = savePath + File.separator + filename;
+            file.transferTo(new File(filePath));
 
-        return attachmentRepository.save(attachment);
+            Optional<Post> optionalPost = postRepository.findById(postId);
+            Post post = optionalPost.orElseThrow(() -> new IllegalArgumentException("Post not found"));
+
+            Attachment attachment = Attachment.builder()
+                    .fileName(filename)
+                    .fileDownloadUri(savePath)
+                    .fileType(file.getContentType())
+                    .size(file.getSize())
+                    .postId(post.getId())
+                    .userId(currentUser.getId())
+                    .date(LocalDate.builder()
+                            .createdAt(LocalDateTime.now())
+                            .build())
+                    .build();
+
+            return attachmentRepository.save(attachment);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save file", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
-
 }
