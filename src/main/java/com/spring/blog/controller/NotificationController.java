@@ -72,4 +72,20 @@ public class NotificationController {
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
+    /*
+        TODO : 공지사항 파일 업로드
+     */
+
+    /*
+        TODO : 공지사항 파일 다운로드
+     */
+
+    /*
+        TODO : 공지사항 파일 활성화
+     */
+
+    /*
+        TODO : 공지사항 파일 비활성화
+     */
 }

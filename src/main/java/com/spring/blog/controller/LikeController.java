@@ -17,9 +17,13 @@ public class LikeController {
 
     private final LikeService likeService;
 
+    /*
+        TODO : The given id must not be null 에러
+     */
     @PostMapping()
     public ResponseEntity<Like> likePost(@PathVariable(name = "postId") Long postId,
                                          UserPrincipal currentUser) {
+
         Like like = likeService.updateLikeOfPost(postId, currentUser);
 
         return new ResponseEntity<>(like, HttpStatus.CREATED);

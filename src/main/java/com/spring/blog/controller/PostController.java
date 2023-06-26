@@ -116,6 +116,9 @@ public class PostController {
     }
 
 
+    /*
+        TODO : 파일 다운로드 항목 수정 하여야함.
+     */
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping("/{id}/downloadFile/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable(name = "id") Long postId,
