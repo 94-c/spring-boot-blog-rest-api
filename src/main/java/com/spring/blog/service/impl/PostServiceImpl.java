@@ -39,6 +39,9 @@ public class PostServiceImpl implements PostService {
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
 
+    /*
+        TODO 검색 기능 고도화 작업 해야함
+     */
     @Override
     @Transactional(readOnly = true)
     public PageResponse<PostResponse> findAllPosts(int pageNo, int pageSize, String sortBy, String sortDir, String title, String content) {
