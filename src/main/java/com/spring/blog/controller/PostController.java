@@ -5,6 +5,7 @@ import com.spring.blog.entity.Post;
 import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
 import com.spring.blog.payload.SuccessResponse;
+import com.spring.blog.payload.request.AttachmentRequestDto;
 import com.spring.blog.payload.response.AttachmentResponse;
 import com.spring.blog.payload.response.PostResponse;
 import com.spring.blog.payload.request.PostRequestDto;
@@ -14,6 +15,7 @@ import com.spring.blog.service.AttachmentService;
 import com.spring.blog.service.PostService;
 import com.spring.blog.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,9 +29,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -109,47 +115,21 @@ public class PostController {
         return new ResponseEntity<>(createAttachment, HttpStatus.OK);
     }
 
-    /*
-        TODO 파일 다운로드 전체 수정 해야함,
-     */
+
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    @GetMapping("/downloadFile/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable("fileName") String fileName,
-                                                 HttpServletRequest request,
-                                                 HttpServletResponse response) {
+    @GetMapping("/{id}/downloadFile/{fileId}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable(name = "id") Long postId,
+                                                 @PathVariable(name = "fileId") Long fileId) throws IOException {
 
-        Resource resource = attachmentService.loadFileAsResource(fileName);
+        Attachment attachment = attachmentService.findByAttachment(fileId);
 
-        String contentType = null;
+        Path path = Paths.get(attachment.getFileDownloadUri());
 
-        try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getCanonicalPath());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        if (contentType == null) {
-            contentType = "application/octet-stream";
-        }
-
-        try {
-            File file = resource.getFile();
-
-            response.setContentType(contentType);
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
-
-            OutputStream outputStream = response.getOutputStream();
-            Files.copy(file.toPath(), outputStream);
-
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        Resource resource = new InputStreamResource(Files.newInputStream(path));
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachment.getFileName() + "\"")
                 .body(resource);
     }
 }
