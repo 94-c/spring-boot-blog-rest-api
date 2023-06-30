@@ -39,21 +39,21 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<NotificationResponse> findAllNotifications(int pageNo, int pageSize, String sortBy, String sortDir) {
+    public PageResponse<NotificationResponse> findAllNotifications(int pageNo, int pageSize, String sortBy, String sortDir, String title, String content) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        Page<Notification> posts = notificationRepository.findAll(pageable);
+        Page<Notification> posts = notificationRepository.findAllSearch(title, content, pageable);
 
         List<Notification> listOfPosts = posts.getContent();
 
-        List<NotificationResponse> content = listOfPosts.stream().map(NotificationResponse::convertToNotificationDto).collect(Collectors.toList());
+        List<NotificationResponse> notificationResponses = listOfPosts.stream().map(NotificationResponse::convertToNotificationDto).collect(Collectors.toList());
 
         PageResponse<NotificationResponse> pageResource = new PageResponse<>();
 
-        pageResource.setContent(content);
+        pageResource.setContent(notificationResponses);
         pageResource.setPageNo(pageNo);
         pageResource.setPageSize(pageSize);
         pageResource.setTotalElements(posts.getTotalElements());
@@ -124,6 +124,48 @@ public class NotificationServiceImpl implements NotificationService {
             notificationRepository.deleteById(notificationId);
 
             return new ApiResponse(Boolean.TRUE, "공지사항이 삭제 되었습니다.");
+        }
+
+        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "권한이 없습니다.");
+
+        throw new UnauthorizedException(apiResponse);
+    }
+
+    @Override
+    public Notification isEnable(Long notificationId, UserPrincipal currentUser) {
+        User user = userRepository.findById(currentUser.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(USER, ID, 1L));
+
+        Notification findByNotification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ResourceNotFoundException(NOTIFICATION, ID, notificationId));
+
+        if (findByNotification.getUser().equals(user)
+                || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
+
+            findByNotification.setIsEnable(0);
+
+            return notificationRepository.save(findByNotification);
+        }
+
+        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "권한이 없습니다.");
+
+        throw new UnauthorizedException(apiResponse);
+    }
+
+    @Override
+    public Notification isUnable(Long notificationId, UserPrincipal currentUser) {
+        User user = userRepository.findById(currentUser.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(USER, ID, 1L));
+
+        Notification findByNotification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ResourceNotFoundException(NOTIFICATION, ID, notificationId));
+
+        if (findByNotification.getUser().equals(user)
+                || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
+
+            findByNotification.setIsEnable(1);
+
+            return notificationRepository.save(findByNotification);
         }
 
         ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "권한이 없습니다.");

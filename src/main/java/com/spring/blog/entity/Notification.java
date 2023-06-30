@@ -22,6 +22,8 @@ public class Notification {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+    @Column(name = "is_enable")
+    private Integer isEnable;
     @Embedded
     private LocalDate date;
 

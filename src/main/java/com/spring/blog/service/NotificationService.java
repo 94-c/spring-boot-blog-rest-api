@@ -9,7 +9,7 @@ import com.spring.blog.security.UserPrincipal;
 
 public interface NotificationService {
 
-    PageResponse<NotificationResponse> findAllNotifications(int pageNo, int pageSize, String sortBy, String sortDir);
+    PageResponse<NotificationResponse> findAllNotifications(int pageNo, int pageSize, String sortBy, String sortDir, String title, String content);
 
     NotificationResponse createNotification(NotificationRequestDto dto, UserPrincipal currentUser);
 
@@ -18,5 +18,7 @@ public interface NotificationService {
     Notification updateNotification(Long notificationId, NotificationRequestDto dto, UserPrincipal currentUser);
 
     ApiResponse deleteNotification(Long notificationId, UserPrincipal currentUser);
+    Notification isEnable(Long notificationId, UserPrincipal currentUser);
+    Notification isUnable(Long notificationId, UserPrincipal currentUser);
 
 }
