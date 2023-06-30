@@ -105,6 +105,15 @@ public class PostController {
         return new ResponseEntity<>(enablePost, HttpStatus.OK);
     }
 
+    @PostMapping("/{id}/unable")
+    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Post> unablePost(@PathVariable(name = "id") Long postId,
+                                           @CurrentUser UserPrincipal currentUser) {
+        Post unablePost = postService.isUnable(postId, currentUser);
+
+        return new ResponseEntity<>(unablePost, HttpStatus.OK);
+    }
+
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping("/{id}/uploadFile")
     public ResponseEntity<Attachment> uploadFile(@PathVariable(name = "id") Long id,

@@ -1,19 +1,32 @@
 package com.spring.blog.service.impl;
 
+import com.spring.blog.entity.Post;
 import com.spring.blog.entity.Role;
 import com.spring.blog.entity.User;
 import com.spring.blog.entity.common.LocalDate;
 import com.spring.blog.entity.common.RoleName;
 import com.spring.blog.exception.AppException;
 import com.spring.blog.exception.BadRequestException;
+import com.spring.blog.exception.ResourceNotFoundException;
+import com.spring.blog.exception.UnauthorizedException;
 import com.spring.blog.payload.ApiResponse;
+import com.spring.blog.payload.PageResponse;
 import com.spring.blog.payload.request.JoinUserRequestDto;
 import com.spring.blog.payload.request.LoginRequestDto;
+import com.spring.blog.payload.request.UserRequestDto;
+import com.spring.blog.payload.response.PostResponse;
+import com.spring.blog.payload.response.UserResponse;
 import com.spring.blog.repository.RoleRepository;
 import com.spring.blog.repository.UserRepository;
+import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.CertificationService;
 import com.spring.blog.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +34,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.spring.blog.utils.AppConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +52,7 @@ public class UserServiceImpl implements UserService {
 
         if (userRepository.existsByEmail(dto.getEmail())) {
             ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "중복 된 이메일입니다.");
-            throw  new BadRequestException(apiResponse);
+            throw new BadRequestException(apiResponse);
         }
 
         List<Role> roles = new ArrayList<>();
@@ -71,6 +87,92 @@ public class UserServiceImpl implements UserService {
             return user.getPassword().equals(dto.getPassword()); // 로그인 성공
         }
         return false; // 로그인 실패
+    }
+
+    @Override
+    public PageResponse<UserResponse> findAllUsers(int pageNo, int pageSize, String sortBy, String sortDir, String email, String name) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<User> users = userRepository.findAllSearch(email, name, pageable);
+
+        List<User> listOfUsers = users.getContent();
+
+        List<UserResponse> userResponses = listOfUsers.stream().map(UserResponse::convertToUserResponse).toList();
+
+        PageResponse<UserResponse> pageResource = new PageResponse<>();
+
+        pageResource.setContent(userResponses);
+        pageResource.setPageNo(pageNo);
+        pageResource.setPageSize(pageSize);
+        pageResource.setTotalElements(users.getTotalElements());
+        pageResource.setTotalPages(users.getTotalPages());
+        pageResource.setLast(pageResource.isLast());
+
+        return pageResource;
+    }
+
+    @Override
+    public User findByUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER, ID, userId));
+    }
+
+    @Override
+    public User updateUser(Long userId, UserRequestDto dto, UserPrincipal currentUser) {
+
+        User findByUser = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER, ID, userId));
+
+        if (findByUser.getId().equals(currentUser.getId())
+                || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
+
+            findByUser.setPassword(dto.getPassword());
+            findByUser.setDate(LocalDate.builder()
+                    .updateAt(LocalDateTime.now())
+                    .build());
+            return userRepository.save(findByUser);
+        }
+
+        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "권한이 없습니다.");
+
+        throw new UnauthorizedException(apiResponse);
+    }
+
+    @Override
+    public User isEnable(Long userId, UserPrincipal currentUser) {
+        User findByUser = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER, ID, userId));
+
+        if (findByUser.getId().equals(currentUser.getId())
+                || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
+            findByUser.setStatus(1);
+            findByUser.setDate(LocalDate.builder()
+                    .updateAt(LocalDateTime.now())
+                    .build());
+            return userRepository.save(findByUser);
+        }
+
+        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "권한이 없습니다.");
+
+        throw new UnauthorizedException(apiResponse);
+    }
+
+    @Override
+    public User isUnable(Long userId, UserPrincipal currentUser) {
+        User findByUser = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(USER, ID, userId));
+
+        if (findByUser.getId().equals(currentUser.getId())
+                || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
+            findByUser.setStatus(0);
+            findByUser.setDate(LocalDate.builder()
+                    .updateAt(LocalDateTime.now())
+                    .build());
+            return userRepository.save(findByUser);
+        }
+
+        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "권한이 없습니다.");
+
+        throw new UnauthorizedException(apiResponse);
     }
 
 
