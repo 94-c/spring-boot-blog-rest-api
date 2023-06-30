@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,15 +24,7 @@ public class Certification {
     private String token;
     private boolean expired;
     private Long userId;
+    private String type;
     private LocalDate date;
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    //토큰 만료
-    public void setTokenToUsed() {
-        this.expired = true;
-    }
 
 }

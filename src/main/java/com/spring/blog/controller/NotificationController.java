@@ -118,9 +118,7 @@ public class NotificationController {
         return new ResponseEntity<>(createAttachment, HttpStatus.OK);
     }
 
-    /*
-        TODO : 공지사항 파일 다운로드
-     */
+
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @GetMapping("/{id}/downloadFile/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable(name = "id") Long postId,

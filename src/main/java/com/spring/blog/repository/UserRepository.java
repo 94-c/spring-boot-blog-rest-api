@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
-
+    User findUserByStatus(Integer status);
     Boolean existsByEmail(@NotBlank String email);
 
     Optional<User> findByNameOrEmail(String name, String email);
@@ -25,4 +25,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             countQuery = "SELECT COUNT(u.id) FROM User u WHERE u.email like %:email% or u.name LIKE %:name%"
     )
     Page<User> findAllSearch(String email, String name, Pageable pageable);
+
+
 }

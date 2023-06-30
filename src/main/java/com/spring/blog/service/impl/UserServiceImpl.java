@@ -1,5 +1,6 @@
 package com.spring.blog.service.impl;
 
+import com.spring.blog.entity.Certification;
 import com.spring.blog.entity.Post;
 import com.spring.blog.entity.Role;
 import com.spring.blog.entity.User;
@@ -11,16 +12,16 @@ import com.spring.blog.exception.ResourceNotFoundException;
 import com.spring.blog.exception.UnauthorizedException;
 import com.spring.blog.payload.ApiResponse;
 import com.spring.blog.payload.PageResponse;
-import com.spring.blog.payload.request.JoinUserRequestDto;
-import com.spring.blog.payload.request.LoginRequestDto;
-import com.spring.blog.payload.request.UserRequestDto;
+import com.spring.blog.payload.request.*;
 import com.spring.blog.payload.response.PostResponse;
 import com.spring.blog.payload.response.UserResponse;
+import com.spring.blog.repository.CertificationRepository;
 import com.spring.blog.repository.RoleRepository;
 import com.spring.blog.repository.UserRepository;
 import com.spring.blog.security.UserPrincipal;
 import com.spring.blog.service.CertificationService;
 import com.spring.blog.service.UserService;
+import com.spring.blog.utils.RandomNumberUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,6 +45,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final CertificationRepository certificationRepository;
     private final CertificationService certificationService;
 
 
@@ -175,5 +177,36 @@ public class UserServiceImpl implements UserService {
         throw new UnauthorizedException(apiResponse);
     }
 
+    @Override
+    public void findByUserPassword(FindByPasswordRequestDto dto) {
+        User findByEmail = userRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new RuntimeException("Not Find Email"));
 
+        //무작위 난수로 만들기
+        findByEmail.setPassword(RandomNumberUtil.getKey(6));
+        findByEmail.setStatus(2);
+
+        userRepository.save(findByEmail);
+
+        certificationService.createPasswordToken(findByEmail.getId(), findByEmail.getEmail());
+    }
+
+    @Override
+    public User findUserByPassword(String token, FindByUpdatePasswordRequestDto dto) {
+
+        Optional<Certification> findByToken = Optional.ofNullable(certificationRepository.findById(token).orElseThrow(() -> new RuntimeException("Not Find Token")));
+
+        User findByUser = userRepository.findById(findByToken.get().getUserId()).orElseThrow(()-> new RuntimeException("Not Found User"));
+
+        if (findByUser != null) {
+            User updateUser = User.builder()
+                    .password(dto.getPassword())
+                    .status(0)
+                    .build();
+            return userRepository.save(updateUser);
+        }
+
+        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "권한이 없습니다.");
+
+        throw new UnauthorizedException(apiResponse);
+    }
 }

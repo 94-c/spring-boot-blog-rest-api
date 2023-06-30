@@ -8,6 +8,8 @@ public interface CertificationService {
 
     void createEmailToken(Long userId, String receiverEmail);
 
+    void createPasswordToken(Long userId, String receiverEmail);
+
     Certification findByIdAndExpirationDateAfterAndExpired(String token);
 
 }

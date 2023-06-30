@@ -2,6 +2,8 @@ package com.spring.blog.controller;
 
 import com.spring.blog.entity.User;
 import com.spring.blog.payload.SuccessResponse;
+import com.spring.blog.payload.request.FindByPasswordRequestDto;
+import com.spring.blog.payload.request.FindByUpdatePasswordRequestDto;
 import com.spring.blog.payload.request.JoinUserRequestDto;
 import com.spring.blog.payload.request.LoginRequestDto;
 import com.spring.blog.payload.response.UserResponse;
@@ -74,8 +76,20 @@ public class AuthController {
         return new ResponseEntity<>(successResponse, httpHeaders, HttpStatus.OK);
     }
 
-    /*
-        TODO : 비밀번호 초기화(재설정)
-     */
+    @PostMapping("/find-password")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void findPassword(@Valid @RequestBody FindByPasswordRequestDto dto) {
+        userService.findByUserPassword(dto);
+    }
+
+    @PutMapping("/find-password/{token}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntity<User> findPasswordByUpdate(@RequestParam(value = "token") String token,
+                                                     @Valid @RequestBody FindByUpdatePasswordRequestDto dto) {
+
+        User findPasswordByUpdate = userService.findUserByPassword(token, dto);
+
+        return new ResponseEntity<>(findPasswordByUpdate, HttpStatus.OK);
+    }
 
 }

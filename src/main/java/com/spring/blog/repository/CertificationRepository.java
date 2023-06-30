@@ -9,5 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface CertificationRepository extends JpaRepository<Certification, String> {
+    Optional<Certification> findById(String token);
     Optional<Certification> findByIdAndExpirationDateAfterAndExpired(String token, LocalDateTime now, boolean expired);
 }

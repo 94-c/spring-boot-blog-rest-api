@@ -38,6 +38,7 @@ public class CertificationServiceImpl implements CertificationService {
 
         //이메일 토큰 저장
         Certification certification = createEmailToken(userId);
+        certification.setType("회원가입 이메일 인증");
         certificationRepository.save(certification);
 
         //이메일 전송
@@ -48,6 +49,24 @@ public class CertificationServiceImpl implements CertificationService {
 
         emailSenderUtil.sendEmail(mailMessage);
     }
+
+    @Override
+    public void createPasswordToken(Long userId, String receiverEmail) {
+
+        //이메일 토큰 저장
+        Certification certification = createEmailToken(userId);
+        certification.setType("비밀번호 찾기");
+        certificationRepository.save(certification);
+
+        //이메일 전송
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(receiverEmail);
+        mailMessage.setSubject("비밀번호 찾기 이메일 인증");
+        mailMessage.setText("http://localhost:8080/find-password?token=" + certification.getId());
+
+        emailSenderUtil.sendEmail(mailMessage);
+    }
+
 
     public Certification findByIdAndExpirationDateAfterAndExpired(String token) {
         Optional<Certification> emailToke = certificationRepository.findByIdAndExpirationDateAfterAndExpired(token, LocalDateTime.now(), false);
